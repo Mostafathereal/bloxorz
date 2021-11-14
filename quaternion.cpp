@@ -12,14 +12,14 @@ Quaternion::Quaternion(){
 
 Quaternion::Quaternion(float angle, float x, float y, float z){
     float halfAngleRad = angle * (PI / 360);
-    float halfSin = sinf(halfAngleRad);
+    float halfSin = sin(halfAngleRad);
 
-    this->w = cosf(halfAngleRad);
+    this->w = cos(halfAngleRad);
     this->x = halfSin * x;
     this->y = halfSin * y;
     this->z = halfSin * z;
 
-    //this->normalize();
+    this->normalize();
 }
 
 Quaternion::Quaternion(float rotX, float rotY, float rotZ)
@@ -46,14 +46,14 @@ Quaternion::Quaternion(float rotX, float rotY, float rotZ)
 }
 
 Quaternion Quaternion::operator* (Quaternion otherQuat){
-    // float newW = this->w * otherQuat.w - this->x * otherQuat.x - this->y * otherQuat.y - this->z * otherQuat.z;
-    // float newX = this->w * otherQuat.x + this->x * otherQuat.w + this->y * otherQuat.z - this->z * otherQuat.y;
-    // float newY = this->w * otherQuat.y - this->x * otherQuat.z + this->y * otherQuat.w + this->z * otherQuat.x;
-    // float newZ = this->w * otherQuat.z + this->x * otherQuat.y - this->y * otherQuat.x + this->z * otherQuat.w;
-    float newW = otherQuat.w * this->w - otherQuat.x * this->x - otherQuat.y * this->y - otherQuat.z * this->z;
-    float newX = otherQuat.w * this->x + otherQuat.x * this->w + otherQuat.y * this->z - otherQuat.z * this->y;
-    float newY = otherQuat.w * this->y - otherQuat.x * this->z + otherQuat.y * this->w + otherQuat.z * this->x;
-    float newZ = otherQuat.w * this->z + otherQuat.x * this->y - otherQuat.y * this->x + otherQuat.z * this->w;
+    float newW = this->w * otherQuat.w - this->x * otherQuat.x - this->y * otherQuat.y - this->z * otherQuat.z;
+    float newX = this->w * otherQuat.x + this->x * otherQuat.w + this->y * otherQuat.z - this->z * otherQuat.y;
+    float newY = this->w * otherQuat.y - this->x * otherQuat.z + this->y * otherQuat.w + this->z * otherQuat.x;
+    float newZ = this->w * otherQuat.z + this->x * otherQuat.y - this->y * otherQuat.x + this->z * otherQuat.w;
+    // float newW = otherQuat.w * this->w - otherQuat.x * this->x - otherQuat.y * this->y - otherQuat.z * this->z;
+    // float newX = otherQuat.w * this->x + otherQuat.x * this->w + otherQuat.y * this->z - otherQuat.z * this->y;
+    // float newY = otherQuat.w * this->y - otherQuat.x * this->z + otherQuat.y * this->w + otherQuat.z * this->x;
+    // float newZ = otherQuat.w * this->z + otherQuat.x * this->y - otherQuat.y * this->x + otherQuat.z * this->w;
 
     Quaternion prod;
     prod.w = newW;
@@ -61,6 +61,7 @@ Quaternion Quaternion::operator* (Quaternion otherQuat){
     prod.y = newY;
     prod.z = newZ;
 
+    prod.normalize();
     return prod;
 }
 
@@ -74,12 +75,12 @@ void Quaternion::populateRotationMatrix(GLfloat* matrix){
     //column 2
     matrix[4] = (GLfloat) ((2 * this->x * this->y) - (2 * this->w * this->z)); 
     matrix[5] = (GLfloat) ((this->w * this->w) - (this->x * this->x) + (this->y * this->y) - (this->z * this->z));
-    matrix[6] = (GLfloat) ((2 * this->y * this->z) - (2 * this->w * this->x));
+    matrix[6] = (GLfloat) ((2 * this->y * this->z) + (2 * this->w * this->x));
     matrix[7] = 0;
 
     //column 3
     matrix[8] = (GLfloat) ((2 * this->x * this->z) + (2 * this->w * this->y));
-    matrix[9] = (GLfloat) ((2 * this->y * this->z) + (2 * this->w * this->x));
+    matrix[9] = (GLfloat) ((2 * this->y * this->z) - (2 * this->w * this->x));
     matrix[10] = (GLfloat) ((this->w * this->w) - (this->x * this->x) - (this->y * this->y) + (this->z * this->z));
     matrix[11] = 0;
 

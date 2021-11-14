@@ -95,43 +95,25 @@ void keyboard(unsigned char key, int x, int y)
 	/* key presses move the cube, if it isn't at the extents (hard-coded here) */
 	switch (key)
 	{
-		case 'q':
-		case 27:
-			block.rotateLeft();
-			break;
-
 		case 'a':
 		case 'A':
-			block.rotateLeft();
+			block.move('l');
 			break;
 
 		case 'w':
 		case 'W':
-			block.rotateUp();
+			block.move('u');
 			break;
 
 		case 'd':
 		case 'D':
-			block.rotateRight();
+			block.move('r');
 			break;
 
 		case 's':
 		case 'S':
-			block.rotateDown();
+			block.move('d');
 			break;
-
-		// case 'y':
-		// case 'Y':
-		// 	if(headRot[1] < 85)
-		// 		headRot[1] += 1;
-		// 	break;
-
-		// case 'u':
-		// case 'U':
-		// 	if(headRot[1] > -85)
-		// 		headRot[1] -= 1;
-		// 	break;
-			
 	}
 	glutPostRedisplay();
 }
@@ -150,31 +132,6 @@ void init(void)
 	glDisable(GL_LIGHTING);
 	glDisable(GL_LIGHT0);
 	// gluPerspective(45, 1, 1, 100);
-}
-
-
-
-void drawGrid()
-{
-	int h=10,w=10;
-	int res=100;// res is the number of smaller squares I want
-	float hratio=h/res;
-	float wratio=w/res;
-	float x,y;
-
-	for(y=-.5;y<=h;y+=h/res)
-	{  
-		for(x=-.5;x<=w;x+=w/res)
-		{  
-			glColor3f(1,1,1);
-			glBegin(GL_QUADS); 
-			glVertex3f(x,y+(h/res),0);
-			glVertex3f(x+(w/res),y+(h/res),0);
-			glVertex3f(x+(w/res),y,0);
-			glVertex3f(x,y,0);
-			glEnd();        
-		}    
-	}
 } 
 
 
@@ -200,6 +157,7 @@ void display(void)
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffMat2);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specMat2);
 	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 27);
+
 
 	// draw platform
 	platform.drawPlatform();
