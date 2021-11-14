@@ -81,29 +81,24 @@ void keyboard(unsigned char key, int x, int y)
 	/* key presses move the cube, if it isn't at the extents (hard-coded here) */
 	switch (key)
 	{
-		case 'q':
-		case 27:
-			block.rotateLeft();
-			break;
-
 		case 'a':
 		case 'A':
-			block.rotateLeft();
+			block.move('l');
 			break;
 
 		case 'w':
 		case 'W':
-			block.rotateUp();
+			block.move('u');
 			break;
 
 		case 'd':
 		case 'D':
-			block.rotateRight();
+			block.move('r');
 			break;
 
 		case 's':
 		case 'S':
-			block.rotateDown();
+			block.move('d');
 			break;
 
 		// case 'y':
@@ -186,11 +181,11 @@ void display(void)
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specMat2);
 	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 27);
 	// glDisable(GL_LIGHTING);
-	glPushMatrix();
+	//glPushMatrix();
 		// glMultMatrixf(block.rotationMatrix);
 		//glRotatef(90, 0, 0, 1);
         block.drawBlock();
-	glPopMatrix();
+	//glPopMatrix();
 
 	glBegin(GL_LINES);
 

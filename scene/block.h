@@ -13,6 +13,7 @@
 #endif
 #include <vector>
 #include "../quaternion.h"
+#include "../blockOrientations.h"
 
 class Block{
     public:
@@ -20,7 +21,6 @@ class Block{
     std::vector<std::vector<float>> normals;
     std::vector<std::vector<int>> faceIndexBuffer;
     Quaternion quat;
-    //Quaternion orient;
     GLfloat* rotationMatrix;
     float faceLength;
     float heightLength;
@@ -31,18 +31,14 @@ class Block{
     float offsetX;
     float offsetY;
     float offsetZ;
-    bool standing;
+    Orientation orientation;
 
     Block(std::vector<std::vector<float>> &vertices, std::vector<std::vector<int>> &faceIndexBuffer, float faceLength, float heightLength, GLfloat* initMatrix);
 
     void drawBlock();
 
-    void calculateNormals();
-
-    void rotateLeft();
-    void rotateRight();
-    void rotateUp();
-    void rotateDown();
+    void setOrientation();
+    void move(int key);
 };
 
 #endif

@@ -19,7 +19,7 @@ Quaternion::Quaternion(float angle, float x, float y, float z){
     this->y = halfSin * y;
     this->z = halfSin * z;
 
-    //this->normalize();
+    this->normalize();
 }
 
 Quaternion::Quaternion(float rotX, float rotY, float rotZ)
