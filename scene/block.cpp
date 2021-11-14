@@ -28,9 +28,19 @@ Block::Block(std::vector<std::vector<float>> &vertices, std::vector<std::vector<
 
     this->normals = std::vector<std::vector<float>>(6, std::vector<float>(3));
 
+    // this->quat = Quaternion(90, 0, 0, 1) * Quaternion(90, 1, 0, 0);
+    // std::cout << this->quat.w << ", " << this->quat.x << ", " << this->quat.y << ", " << this->quat.z << std::endl;
+    // this->rotationMatrix = initMatrix;
+    // this->quat.populateRotationMatrix(this->rotationMatrix);
+    // for(int i = 0; i < 16; i++)
+    //     std::cout << this->rotationMatrix[i] << "  ";
+    // this->rotationMatrix[6] = 1;
+    // this->rotationMatrix[9] = 0;
+
     this->quat = Quaternion();
     this->rotationMatrix = initMatrix;
     this->quat.populateRotationMatrix(this->rotationMatrix);
+
 
     this->posX1 = 0;
     this->posZ1 = 0;
