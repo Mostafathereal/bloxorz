@@ -19,6 +19,7 @@
 #include <vector>
 #include "scene/block.h"
 #include <iostream>
+#include "scene/platform.h"
 
 
 float camPos[] = {5, 5, 5};
@@ -51,8 +52,13 @@ float c[3] = {0.5,1,0.5};
 float w = 1;
 float h = 2;
 float d = 1;
-/* drawBox - takes centre point, width, height and depth of a box,
- *  calculates its corner vertices, and draws it with the cube function
+
+float platformSize = 200;
+float base[3] = {0, -1, 0};
+
+
+/*
+ *block object
  */
 std::vector<std::vector<float>> vertices = { {c[0]-w/2, c[1]-h/2, c[2]+d/2},
                             {c[0]-w/2, c[1]+h/2, c[2]+d/2},
@@ -62,18 +68,26 @@ std::vector<std::vector<float>> vertices = { {c[0]-w/2, c[1]-h/2, c[2]+d/2},
                             {c[0]-w/2, c[1]+h/2, c[2]-d/2}, 
                             {c[0]+w/2, c[1]+h/2, c[2]-d/2},
                             {c[0]+w/2, c[1]-h/2, c[2]-d/2} };
-
 std::vector<std::vector<int>> faceIndexBuffer = { {0, 3, 2, 1},
                                 {1, 0, 4, 5},
                                 {5, 1, 2, 6},
                                 {2, 3, 7, 6},
                                 {6, 5, 4, 7},
                                 {4, 0, 3, 7} };
-
 GLfloat initMatrix[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
-
 Block block(vertices, faceIndexBuffer, w, h, initMatrix);
 
+/******
+ * Platform object 
+ */
+std::vector<std::vector<int>> platform_map = {
+	{1, 1, 1, 1, 1},
+	{1, 1, 1, 1, 1},
+	{1, 1, 1, 1, 1},
+	{1, 1, 1, 1, 1},
+	{1, 1, 1, 1, 1}
+};
+Platform platform(platform_map);
 
 void keyboard(unsigned char key, int x, int y)
 {
@@ -133,7 +147,8 @@ void init(void)
 	glLoadIdentity();
 	glOrtho(-10, 10, -10, 10, -10, 80);
 
-    
+	glDisable(GL_LIGHTING);
+	glDisable(GL_LIGHT0);
 	// gluPerspective(45, 1, 1, 100);
 }
 
@@ -185,6 +200,10 @@ void display(void)
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffMat2);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specMat2);
 	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 27);
+
+	// draw platform
+	platform.drawPlatform();
+
 	// glDisable(GL_LIGHTING);
 	glPushMatrix();
 		// glMultMatrixf(block.rotationMatrix);
@@ -206,6 +225,9 @@ void display(void)
     glVertex3f(0.0, 0.0, 0.0);
     glVertex3f(0.0, 0.0, 5.0);
     glEnd();
+
+
+
 	glutSwapBuffers();
 }
 
