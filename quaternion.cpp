@@ -99,3 +99,39 @@ void Quaternion::normalize(){
     this->y = this->y / length;
     this->z = this->z / length;
 }
+
+Quaternion slerp(Quaternion qa, Quaternion qb, float t) {
+	// quaternion to return
+	Quaternion qm;
+	// Calculate angle between them.
+	float cosHalfTheta = qa.w * qb.w + qa.x * qb.x + qa.y * qb.y + qa.z * qb.z;
+    if (cosHalfTheta < 0) {
+        qb.w = -qb.w; qb.x = -qb.x; qb.y = -qb.y; qb.z = qb.z;
+        cosHalfTheta = -cosHalfTheta;
+    }
+	// if qa=qb or qa=-qb then theta = 0 and we can return qa
+	if (abs(cosHalfTheta) >= 1.0){
+		qm.w = qa.w;qm.x = qa.x;qm.y = qa.y;qm.z = qa.z;
+		return qm;
+	}
+	// Calculate temporary values.
+	float halfTheta = acos(cosHalfTheta);
+	float sinHalfTheta = sqrt(1.0 - cosHalfTheta*cosHalfTheta);
+	// if theta = 180 degrees then result is not fully defined
+	// we could rotate around any axis normal to qa or qb
+	if (fabs(sinHalfTheta) < 0.001){ // fabs is floating point absolute
+		qm.w = (qa.w * 0.5 + qb.w * 0.5);
+		qm.x = (qa.x * 0.5 + qb.x * 0.5);
+		qm.y = (qa.y * 0.5 + qb.y * 0.5);
+		qm.z = (qa.z * 0.5 + qb.z * 0.5);
+		return qm;
+	}
+	float ratioA = sin((1 - t) * halfTheta) / sinHalfTheta;
+	float ratioB = sin(t * halfTheta) / sinHalfTheta; 
+	//calculate Quaternion.
+	qm.w = (qa.w * ratioA + qb.w * ratioB);
+	qm.x = (qa.x * ratioA + qb.x * ratioB);
+	qm.y = (qa.y * ratioA + qb.y * ratioB);
+	qm.z = (qa.z * ratioA + qb.z * ratioB);
+	return qm;
+}

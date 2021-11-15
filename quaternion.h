@@ -27,4 +27,6 @@ class Quaternion{
     void normalize();
 };
 
+Quaternion slerp(Quaternion qa, Quaternion qb, float t);
+
 #endif

@@ -12,22 +12,7 @@
 #include "block.h"
 #include "../blockOrientations.h"
 
-Block::Block(std::vector<std::vector<float>> &vertices, std::vector<std::vector<int>> &faceIndexBuffer, float faceLength, float heightLength, GLfloat* initMatrix){
-    this->vertices = std::vector<std::vector<float>>();
-    for (auto &vertex : vertices){
-        this->vertices.push_back(vertex);
-    }
-
-    this->faceIndexBuffer = std::vector<std::vector<int>>();
-    for (auto &face : faceIndexBuffer){
-        this->faceIndexBuffer.push_back(face);
-    }
-
-    this->faceLength = faceLength;
-    this->heightLength = heightLength;
-
-    this->normals = std::vector<std::vector<float>>(6, std::vector<float>(3));
-    
+Block::Block(GLfloat* initMatrix){    
     this->quat = Quaternion();
     this->rotationMatrix = initMatrix;
     this->quat.populateRotationMatrix(this->rotationMatrix);
@@ -44,7 +29,7 @@ Block::Block(std::vector<std::vector<float>> &vertices, std::vector<std::vector<
     this->offsetZ = 0;
 
     this->orientation = Standing;
-    
+    this->direction = NA;
 }
 
 void Block::drawBlock(){
@@ -91,12 +76,20 @@ void Block::setOrientation(){
     }
 }
 
-void Block::move(int key){
+void Block::setDirection(Direction directionToRoll){
+    this->direction = directionToRoll;
+    std::cout << this->posX1 << ", " << this->posZ1 << std::endl;
+}
+
+void Block::update(){
+
+    if(this->direction == NA)
+        return;
+
     Quaternion tempQuat;
-    switch(key){
-        case 'u':
-        case 'U':{
-            tempQuat = Quaternion(90, -1, 0, 0);
+    switch(this->direction){
+        case Up:{
+            tempQuat = slerp(this->quat, Quaternion(90, -1, 0, 0), 1);
 
             this->posZ2 = this->posZ1;
             if(this->orientation == Standing)
@@ -106,12 +99,11 @@ void Block::move(int key){
 
             this->offsetZ = this->posZ1; 
 
-            this->setOrientation();
+            
             break;
         }
-        case 'd':
-        case 'D':{
-            tempQuat = Quaternion(90, 1, 0, 0);
+        case Down:{
+            tempQuat = slerp(this->quat, Quaternion(90, 1, 0, 0), 1);
 
             this->posZ1 = this->posZ2;
             if(this->orientation == Standing)
@@ -120,13 +112,10 @@ void Block::move(int key){
                 this->posZ2 += 1;
 
             this->offsetZ = this->posZ1; 
-
-            this->setOrientation();
             break;
         }
-        case 'l':
-        case 'L':{
-            tempQuat = Quaternion(90, 0, 0, -1);
+        case Left:{
+            tempQuat = slerp(this->quat, Quaternion(90, 0, 0, -1), 1);
 
             this->posX2 = this->posX1;
             if(this->orientation == Standing)
@@ -136,13 +125,10 @@ void Block::move(int key){
 
             
             this->offsetX = this->posX1;
-
-            this->setOrientation();
             break;
         }
-        case 'r':
-        case 'R':{
-            tempQuat = Quaternion(90, 0, 0, 1);
+        case Right:{
+            tempQuat = slerp(this->quat, Quaternion(90, 0, 0, 1), 1);
 
             this->posX1 = this->posX2;
             if(this->orientation == Standing)
@@ -151,11 +137,13 @@ void Block::move(int key){
                 this->posX2 += 1;
 
             this->offsetX = this->posX1;
-
-            this->setOrientation();
             break;
         }
     }
+
+    this->setOrientation();
     this->quat = tempQuat * this->quat;
     this->quat.populateRotationMatrix(this->rotationMatrix);
+
+    this->setDirection(NA);
 }

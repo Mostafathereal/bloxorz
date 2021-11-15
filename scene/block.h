@@ -17,13 +17,8 @@
 
 class Block{
     public:
-    std::vector<std::vector<float>> vertices;
-    std::vector<std::vector<float>> normals;
-    std::vector<std::vector<int>> faceIndexBuffer;
     Quaternion quat;
     GLfloat* rotationMatrix;
-    float faceLength;
-    float heightLength;
     float posX1;
     float posZ1;
     float posX2;
@@ -32,13 +27,16 @@ class Block{
     float offsetY;
     float offsetZ;
     Orientation orientation;
+    Direction direction;
+    
 
-    Block(std::vector<std::vector<float>> &vertices, std::vector<std::vector<int>> &faceIndexBuffer, float faceLength, float heightLength, GLfloat* initMatrix);
+    Block(GLfloat* initMatrix);
 
     void drawBlock();
 
     void setOrientation();
-    void move(int key);
+    void update();
+    void setDirection(Direction directionToRoll);
 };
 
 #endif
