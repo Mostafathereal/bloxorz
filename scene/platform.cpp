@@ -11,12 +11,23 @@
 #include "platform.h"
 #include <iostream>
 
+float mat_ambient[] ={ 0.24725f, 0.1995f, 0.0745f, 1.0f };
+float mat_diffuse[] = {0.75164f, 0.60648f, 0.22648f, 1.0f };
+float mat_specular[] ={0.628281f, 0.555802f, 0.366065f, 1.0f };
+float shine[] = {51.2f} ;
+
 Platform::Platform(std::vector<std::vector<int>> &map){
     this->tiles = map;
 }
 
 void Platform::drawPlatform(){
     glPushMatrix();
+    glNormal3f(0, 1, 0);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mat_ambient);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mat_diffuse);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, shine);
+
     float colors[2][3] = {{1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}};
 
         for(int row = 0; row < this->tiles.size(); ++row){
@@ -34,6 +45,7 @@ void Platform::drawPlatform(){
                 }
             }
         }
+    glPopMatrix();
     
 
 }

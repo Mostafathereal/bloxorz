@@ -11,34 +11,65 @@
 #  include <GL/glu.h>
 #  include <GL/freeglut.h>
 #endif
-#include <vector>
 #include "../quaternion.h"
 #include "../blockOrientations.h"
 
 class Block{
     public:
-    std::vector<std::vector<float>> vertices;
-    std::vector<std::vector<float>> normals;
-    std::vector<std::vector<int>> faceIndexBuffer;
+    //quaternions for orientation and rotation
     Quaternion quat;
+    Quaternion rotQuat;
+
+    //rotation matrix to apply rotation transformations to model view
     GLfloat* rotationMatrix;
-    float faceLength;
-    float heightLength;
+    
+    //position of top left corner of block
     float posX1;
     float posZ1;
+
+    //position of bottom right corner of block
     float posX2;
     float posZ2;
+
+    //normialized origin of block (real time, includes animational changes)
     float offsetX;
     float offsetY;
     float offsetZ;
+
+    //normialized origin of block (does not include animational changes, only stationary positions)
+    float originX;
+    float originY;
+    float originZ;
+
+    //length of base of block
+    float baseLength;
+
+    //length of height of block
+    float heightLength;
+
+    //orientation of block (standing, laying down in x axis, laying down in z axis)
     Orientation orientation;
 
-    Block(std::vector<std::vector<float>> &vertices, std::vector<std::vector<int>> &faceIndexBuffer, float faceLength, float heightLength, GLfloat* initMatrix);
+    //direction of rotation when block is being animated
+    Direction direction;
+
+    //t and value to increment t/ per call. Used for SLERP interpolation in animation
+    float rotIncrement;
+    float currentT;
+
+    //offsets for right and down directions (need them to make sure block rotates over its right and down edges)
+    float RightRotationOffset;
+    float DownRotationOffset;
+
+    Block(GLfloat* initMatrix);
 
     void drawBlock();
 
     void setOrientation();
-    void move(int key);
+    void update();
+    void updatePosition();
+    void setDirection(Direction directionToRoll);
+    void setOrigin();
 };
 
 #endif

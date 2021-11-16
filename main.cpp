@@ -46,13 +46,6 @@ float specMat2[4] = {0,1,0,1};
 
 
 /* Block */
-
-// origin
-float c[3] = {0.5,1,0.5};
-float w = 1;
-float h = 2;
-float d = 1;
-
 float platformSize = 200;
 float base[3] = {0, -1, 0};
 
@@ -60,22 +53,8 @@ float base[3] = {0, -1, 0};
 /*
  *block object
  */
-std::vector<std::vector<float>> vertices = { {c[0]-w/2, c[1]-h/2, c[2]+d/2},
-                            {c[0]-w/2, c[1]+h/2, c[2]+d/2},
-                            {c[0]+w/2, c[1]+h/2, c[2]+d/2},
-                            {c[0]+w/2, c[1]-h/2, c[2]+d/2}, 
-                            {c[0]-w/2, c[1]-h/2, c[2]-d/2}, 
-                            {c[0]-w/2, c[1]+h/2, c[2]-d/2}, 
-                            {c[0]+w/2, c[1]+h/2, c[2]-d/2},
-                            {c[0]+w/2, c[1]-h/2, c[2]-d/2} };
-std::vector<std::vector<int>> faceIndexBuffer = { {0, 3, 2, 1},
-                                {1, 0, 4, 5},
-                                {5, 1, 2, 6},
-                                {2, 3, 7, 6},
-                                {6, 5, 4, 7},
-                                {4, 0, 3, 7} };
 GLfloat initMatrix[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
-Block block(vertices, faceIndexBuffer, w, h, initMatrix);
+Block block(initMatrix);
 
 /******
  * Platform object 
@@ -97,25 +76,24 @@ void keyboard(unsigned char key, int x, int y)
 	{
 		case 'a':
 		case 'A':
-			block.move('l');
+			block.setDirection(Left);
 			break;
 
 		case 'w':
 		case 'W':
-			block.move('u');
+			block.setDirection(Up);
 			break;
 
 		case 'd':
 		case 'D':
-			block.move('r');
+			block.setDirection(Right);
 			break;
 
 		case 's':
 		case 'S':
-			block.move('d');
+			block.setDirection(Down);
 			break;
 	}
-	glutPostRedisplay();
 }
 
 
@@ -129,8 +107,8 @@ void init(void)
 	glLoadIdentity();
 	glOrtho(-10, 10, -10, 10, -10, 80);
 
-	glDisable(GL_LIGHTING);
-	glDisable(GL_LIGHT0);
+	//glDisable(GL_LIGHTING);
+	//glDisable(GL_LIGHT0);
 	// gluPerspective(45, 1, 1, 100);
 } 
 
@@ -153,19 +131,18 @@ void display(void)
 	glLightfv(GL_LIGHT0, GL_SPECULAR, spec);
 
 
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambMat2);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffMat2);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specMat2);
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 27);
-
-
 	// draw platform
 	platform.drawPlatform();
 
 	// glDisable(GL_LIGHTING);
+	block.update();
 	glPushMatrix();
 		// glMultMatrixf(block.rotationMatrix);
 		//glRotatef(90, 0, 0, 1);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambMat2);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffMat2);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specMat2);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 27);
         block.drawBlock();
 	glPopMatrix();
 
@@ -189,6 +166,11 @@ void display(void)
 	glutSwapBuffers();
 }
 
+void FPS(int value){
+	glutPostRedisplay();
+	glutTimerFunc(17, FPS, 0);
+}
+
 /* main function - program entry point */
 int main(int argc, char** argv)
 {
@@ -204,6 +186,8 @@ int main(int argc, char** argv)
 
 	glutDisplayFunc(display);	//registers "display" as the display callback function
 	glutKeyboardFunc(keyboard);
+
+	glutTimerFunc(17, FPS, 0);
 
 	glEnable(GL_DEPTH_TEST);
     
