@@ -6,7 +6,7 @@
 - Purv Patel - patep11
 - Hassan Jasim - jasima
 
-### Prototype works and features
+## Prototype works and features
 - Block class 
   - position (block position as well as origin from where to draw the block)
   - bounding coordinates (this is basically two position points for now, top left and bottom right of block (base of block))
@@ -24,6 +24,7 @@
 - Basic camera model 
   - We just implemented a basic orthogonal camera in the positive corner for now (we focused more on smooth animations and block logic instead).
   - We also added some simple lighting to the block and tiles.
+- Basic local light
  
 
  ## Things to Do/ We might add (This is not an extensive list and we might add more things)
