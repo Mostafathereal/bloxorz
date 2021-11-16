@@ -6,6 +6,10 @@
 - Purv Patel - patep11
 - Hassan Jasim - jasima
 
+## Dev Environments
+- MacOS - Apple silicon
+- Windows 10
+
 ## Prototype works and features
 - Block class 
   - position (block position as well as origin from where to draw the block)
@@ -25,7 +29,6 @@
   - We just implemented a basic orthogonal camera in the positive corner for now (we focused more on smooth animations and block logic instead).
   - We also added some simple lighting to the block and tiles.
 - Basic local light
- 
 
  ## Things to Do/ We might add (This is not an extensive list and we might add more things)
  - Undo functionality
@@ -41,7 +44,6 @@
  - Level design and additional mechanics
     - Implement logic to play multiple levels (we already have the basic tools in our prototype, just need to design levels)
     - Adding additional features like tiles turning on and off at certain intervals or breaking after one pass through or having switches on tiles to trigger things
- 
  
  ## Things to Optimize
  - Cleaning up code
