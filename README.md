@@ -16,7 +16,7 @@
   - consists of tile map (2D vector)
   - draws the tiles if their values are `1`
 - Quaternion class
-  - <purv can u plz talk about this>
+  - purv can u plz talk about this
   - Also talk about slurp and animations
 - Keyboard controls 
   - Use W, A, S, D to roll the block on the platform
