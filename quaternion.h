@@ -11,7 +11,7 @@
 #  include <GL/glu.h>
 #  include <GL/freeglut.h>
 #endif
-
+#include "mathLib3D.h"
 class Quaternion{
     public:
     float w;
@@ -21,12 +21,12 @@ class Quaternion{
 
     Quaternion();
     Quaternion(float angle, float x, float y, float z);
-    Quaternion(float rotX, float rotY, float rotZ);
     Quaternion operator*(Quaternion otherQuat);
     void populateRotationMatrix(GLfloat* matrix);
     void normalize();
 };
 
 Quaternion slerp(Quaternion qa, Quaternion qb, float t);
+Point3D rotateAboutUnitQuaternion(Quaternion q, Point3D p);
 
 #endif
