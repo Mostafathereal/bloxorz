@@ -12,6 +12,6 @@
 #  include <GL/freeglut.h>
 #endif
 
-void APIENTRY glutTexturedSolidCube(GLdouble size);
+void glutTexturedSolidCube(GLdouble size);
 
 #endif

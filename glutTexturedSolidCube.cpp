@@ -100,8 +100,7 @@ drawBox(GLfloat size, GLenum type)
   }
 }
 
-void APIENTRY
-glutTexturedSolidCube(GLdouble size)
+void glutTexturedSolidCube(GLdouble size)
 {
   drawBox(size, GL_QUADS);
 }
