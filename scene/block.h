@@ -11,8 +11,10 @@
 #  include <GL/glu.h>
 #  include <GL/freeglut.h>
 #endif
+#include <vector>
 #include "../quaternion.h"
 #include "../blockOrientations.h"
+#include "../texture2D.h"
 
 class Block{
     public:
@@ -61,6 +63,15 @@ class Block{
     float RightRotationOffset;
     float DownRotationOffset;
 
+    //move history for undos
+    std::vector<Direction> undoMoveHist;
+
+    //number of moves made
+    int numMoves;
+
+    //texture
+    Texture2D texture;
+
     Block(GLfloat* initMatrix);
 
     void drawBlock();
@@ -69,7 +80,9 @@ class Block{
     void update();
     void updatePosition();
     void setDirection(Direction directionToRoll);
+    void undoMove();
     void setOrigin();
+    void changeTexture(char* file);
 };
 
 #endif

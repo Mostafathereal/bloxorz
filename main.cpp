@@ -20,6 +20,7 @@
 #include "scene/block.h"
 #include <iostream>
 #include "scene/platform.h"
+#include "texture2D.h"
 
 
 float camPos[] = {5, 5, 5};
@@ -40,9 +41,17 @@ float diffMat[4] = {1,0,0,1};
 float specMat[4] = {0,1,0,1};
 
 
+// Obsidian
+// float ambMat2[4] ={ 0.05375f, 0.05f, 0.06625f, 0.82f };
+// float diffMat2[4] ={ 0.18275f, 0.17f, 0.22525f, 0.82f};
+// float specMat2[4] ={0.332741f, 0.328634f, 0.346435f, 0.82f };
+// float shine2 = 38.4f ;
+
+// Jade
 float ambMat2[4] = {0.5,0.5,0.5,1};
 float diffMat2[4] = {0,1,0,1};
 float specMat2[4] = {0,1,0,1};
+float shine2 = 27.0f;
 
 
 /* Block */
@@ -93,6 +102,9 @@ void keyboard(unsigned char key, int x, int y)
 		case 'S':
 			block.setDirection(Down);
 			break;
+		case 'z':
+		case 'Z':
+			block.undoMove();
 	}
 }
 
@@ -106,6 +118,17 @@ void init(void)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(-10, 10, -10, 10, -10, 80);
+
+	glEnable(GL_TEXTURE_2D);
+
+    block.changeTexture("textures/lava_texture.ppm");
+	block.texture.setTexture();
+    
+    
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	//glDisable(GL_LIGHTING);
 	//glDisable(GL_LIGHT0);
@@ -142,7 +165,7 @@ void display(void)
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambMat2);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffMat2);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specMat2);
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 27);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shine2);
         block.drawBlock();
 	glPopMatrix();
 
@@ -182,7 +205,7 @@ int main(int argc, char** argv)
 	glutInitWindowSize(800, 800);
 	glutInitWindowPosition(100, 100);
 
-	glutCreateWindow("Snowman");	//creates the window
+	glutCreateWindow("Bloxorz");	//creates the window
 
 	glutDisplayFunc(display);	//registers "display" as the display callback function
 	glutKeyboardFunc(keyboard);

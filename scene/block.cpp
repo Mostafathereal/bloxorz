@@ -10,8 +10,10 @@
 #endif
 #include <iostream>
 #include "block.h"
+#include "../texture2D.h"
 #include "../blockOrientations.h"
 #include "../mathLib3D.h"
+#include "../glutTexturedSolidCube.h"
 
 Block::Block(GLfloat* initMatrix){   
     //initialize quaternions to keep track of orientation and rotation between animations
@@ -58,6 +60,14 @@ Block::Block(GLfloat* initMatrix){
     // offsets to make sure right and down rotate properly since their axis of rotation is not at origin
     this->RightRotationOffset = this->baseLength;
     this->DownRotationOffset = this->baseLength;
+
+    //move history (store as undo moves)
+    this->undoMoveHist = std::vector<Direction>();
+
+    //number of moves
+    this->numMoves = 0;
+
+    //default texture is already set (no need to do it here, we use malloc for texture array)
 }
 
 void Block::drawBlock(){
@@ -70,7 +80,7 @@ void Block::drawBlock(){
 
         //scale block adn draw
         glScalef(this->baseLength, this->heightLength, this->baseLength);
-        glutSolidCube(1);
+        glutTexturedSolidCube(1);
     glPopMatrix();
 }
 
@@ -140,6 +150,15 @@ void Block::setDirection(Direction directionToRoll){
         this->direction = directionToRoll;
 }
 
+void Block::undoMove(){
+    if(this->direction == NA && this->undoMoveHist.size() > 0){
+        this->direction = this->undoMoveHist.back();
+        this->undoMoveHist.pop_back();
+    }
+    return;
+        
+}
+
 void Block::update(){
 
     // if direction is not set (not currently animating), return or increment t to get next quaternion in the animation
@@ -152,6 +171,7 @@ void Block::update(){
     //declare tempQuat to record next quaternion in rotation
     Quaternion tempQuat;
     switch(this->direction){
+        case UndoDown:
         case Up:{
 
             // used 2 quaternions here tempQuat is total rotations while tempRotQuat records rotation along the current animation (rotating up in this case)
@@ -164,6 +184,7 @@ void Block::update(){
             this->offsetZ = rotatedPoint.mZ;
             break;
         }
+        case UndoUp:
         case Down:{
             tempQuat = slerp(this->quat, Quaternion(90, 1, 0, 0)  * this->quat, this->currentT);
             Quaternion tempRotQuat = slerp(Quaternion(), Quaternion(90, 1, 0, 0), this->currentT);
@@ -174,6 +195,7 @@ void Block::update(){
             this->offsetZ = rotatedPoint.mZ + this->DownRotationOffset;
             break;
         }
+        case UndoRight:
         case Left:{
             tempQuat = slerp(this->quat, Quaternion(90, 0, 0, 1)  * this->quat, this->currentT);
             Quaternion tempRotQuat = slerp(Quaternion(), Quaternion(90, 0, 0, 1), this->currentT);
@@ -184,6 +206,7 @@ void Block::update(){
             this->offsetZ = rotatedPoint.mZ;
             break;
         }
+        case UndoLeft:
         case Right:{
             tempQuat = slerp(this->quat, Quaternion(90, 0, 0, -1) * this->quat, this->currentT);
             Quaternion tempRotQuat = slerp(Quaternion(), Quaternion(90, 0, 0, -1), this->currentT);
@@ -213,7 +236,19 @@ void Block::update(){
         this->quat.y = this->rotQuat.y;
         this->quat.z = this->rotQuat.z;
 
-        
+        this->numMoves += 1;
+        if(this->direction == Up)
+            this->undoMoveHist.push_back(UndoUp);
+        else if (this->direction == Down)
+            this->undoMoveHist.push_back(UndoDown);
+        else if (this->direction == Left)
+            this->undoMoveHist.push_back(UndoLeft);
+        else if (this->direction == Right)
+            this->undoMoveHist.push_back(UndoRight);
+        else
+            // -2 because 1 is added every time for moves
+            this->numMoves -= 2;
+
         this->direction = NA;
         
     }
@@ -223,6 +258,7 @@ void Block::updatePosition(){
 
     //update logic to update both the positions (will be used for collision later)
     switch(this->direction){
+        case UndoDown:
         case Up:{
             this->posZ2 = this->posZ1;
             if(this->orientation == Standing)
@@ -231,6 +267,7 @@ void Block::updatePosition(){
                 this->posZ1 -= this->baseLength;
             break;
         }
+        case UndoUp:
         case Down:{
             this->posZ1 = this->posZ2;
             if(this->orientation == Standing)
@@ -239,6 +276,7 @@ void Block::updatePosition(){
                 this->posZ2 += this->baseLength;
             break;
         }
+        case UndoRight:
         case Left:{
             this->posX2 = this->posX1;
             if(this->orientation == Standing)
@@ -247,6 +285,7 @@ void Block::updatePosition(){
                 this->posX1 -= this->baseLength;
             break;
         }
+        case UndoLeft:
         case Right:{
             this->posX1 = this->posX2;
             if(this->orientation == Standing)
@@ -259,3 +298,7 @@ void Block::updatePosition(){
     }
 }
 
+void Block::changeTexture(char* file){
+    free(this->texture.img);
+    this->texture = Texture2D(file);
+}
