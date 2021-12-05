@@ -47,11 +47,17 @@ float specMat[4] = {0,1,0,1};
 // float specMat2[4] ={0.332741f, 0.328634f, 0.346435f, 0.82f };
 // float shine2 = 38.4f ;
 
+//Polished bronze
+float ambMat2[4] ={0.25f, 0.148f, 0.06475f, 1.0f  };
+float diffMat2[4] ={0.4f, 0.2368f, 0.1036f, 1.0f };
+float specMat2[4] ={0.774597f, 0.458561f, 0.200621f, 1.0f };
+float shine2 =76.8f ;
+
 // Jade
-float ambMat2[4] = {0.5,0.5,0.5,1};
-float diffMat2[4] = {0,1,0,1};
-float specMat2[4] = {0,1,0,1};
-float shine2 = 27.0f;
+// float ambMat3[4] = {0.5,0.5,0.5,1};
+// float diffMat3[4] = {0,1,0,1};
+// float specMat3[4] = {0,1,0,1};
+// float shine3 = 27.0f;
 
 
 /* Block */
@@ -121,7 +127,7 @@ void init(void)
 
 	glEnable(GL_TEXTURE_2D);
 
-    block.changeTexture("textures/lava_texture.ppm");
+    block.changeTexture("textures/wood_texture.ppm");
 	block.texture.setTexture();
     
     
@@ -135,6 +141,32 @@ void init(void)
 	// gluPerspective(45, 1, 1, 100);
 } 
 
+void displayText(std::string s, std::string position)
+{
+    glColor3f(0.0f, 0.0f, 0.0f);
+	if (position == "TopRight") {
+	    glRasterPos3i(4, 11, -4);
+	}
+	else if (position == "BottomRight") {
+	    glRasterPos3i(4, -11, -4);
+	}
+	else if (position == "TopLeft") {
+	    glRasterPos3i(-7, 11, 7);
+	}
+	else if (position == "BottomLeft") {
+	    glRasterPos3i(-7, -11, 7);
+	}
+	else if (position == "Center") {
+	    glRasterPos3i(1, 5, 5);
+	}
+	else {
+	    glRasterPos3i(0, 0, 0);
+	}
+    for (std::string::iterator i = s.begin(); i != s.end(); ++i)
+    {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *i);
+    }
+}
 
 /* display function - GLUT display callback function
  *		clears the screen, sets the camera position, draws the ground plane and movable box
@@ -153,6 +185,11 @@ void display(void)
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, diff);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, spec);
 
+	// displayText("This is text", "TopRight");
+	// displayText("This is text", "BottomRight");
+	// displayText("This is text", "TopLeft");
+	// displayText("This is text", "BottomLeft");
+	// displayText("This is text", "Center");
 
 	// draw platform
 	platform.drawPlatform();
