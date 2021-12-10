@@ -20,6 +20,7 @@
 #include "scene/block.h"
 #include <iostream>
 #include "scene/platform.h"
+#include "texture2D.h"
 
 
 float camPos[] = {5, 5, 5};
@@ -40,9 +41,27 @@ float diffMat[4] = {1,0,0,1};
 float specMat[4] = {0,1,0,1};
 
 
-float ambMat2[4] = {0.5,0.5,0.5,1};
-float diffMat2[4] = {0,1,0,1};
-float specMat2[4] = {0,1,0,1};
+// Obsidian
+// float ambMat2[4] ={ 0.05375f, 0.05f, 0.06625f, 0.82f };
+// float diffMat2[4] ={ 0.18275f, 0.17f, 0.22525f, 0.82f};
+// float specMat2[4] ={0.332741f, 0.328634f, 0.346435f, 0.82f };
+// float shine2 = 38.4f ;
+
+//Polished bronze
+float ambMat2[4] ={0.25f, 0.148f, 0.06475f, 1.0f  };
+float diffMat2[4] ={0.4f, 0.2368f, 0.1036f, 1.0f };
+float specMat2[4] ={0.774597f, 0.458561f, 0.200621f, 1.0f };
+float shine2 =76.8f ;
+
+// Jade
+// float ambMat3[4] = {0.5,0.5,0.5,1};
+// float diffMat3[4] = {0,1,0,1};
+// float specMat3[4] = {0,1,0,1};
+// float shine3 = 27.0f;
+
+// float ambMat2[4] = {0.5,0.5,0.5,1};
+// float diffMat2[4] = {0,1,0,1}; 
+// float specMat2[4] = {0,1,0,1};
 
 
 /* Block */
@@ -60,11 +79,12 @@ Block block(initMatrix);
  * Platform object 
  */
 std::vector<std::vector<int>> platform_map = {
-	{1, 1, 1, 1, 1},
-	{1, 1, 1, 1, 1},
-	{1, 1, 1, 1, 1},
-	{1, 1, 1, 1, 1},
-	{1, 1, 1, 1, 1}
+	{1, 1, 1, 1, 1, 1},
+	{1, 1, 1, 1, 1, 1},
+	{1, 1, 1, 1, 1, 1},
+	{1, 1, 0, 1, 1, 1},
+	{1, 1, 1, 0, 1, 1},
+	{1, 1, 1, 1, 1, 1}
 };
 Platform platform(platform_map);
 
@@ -93,6 +113,9 @@ void keyboard(unsigned char key, int x, int y)
 		case 'S':
 			block.setDirection(Down);
 			break;
+		case 'z':
+		case 'Z':
+			block.undoMove();
 	}
 }
 
@@ -107,11 +130,48 @@ void init(void)
 	glLoadIdentity();
 	glOrtho(-10, 10, -10, 10, -10, 80);
 
+	glEnable(GL_TEXTURE_2D);
+
+    block.changeTexture("textures/wood_texture.ppm");
+	block.texture.setTexture();
+    
+    
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
 	//glDisable(GL_LIGHTING);
 	//glDisable(GL_LIGHT0);
 	// gluPerspective(45, 1, 1, 100);
 } 
 
+void displayText(std::string s, std::string position)
+{
+    glColor3f(0.0f, 0.0f, 0.0f);
+	if (position == "TopRight") {
+	    glRasterPos3i(4, 11, -4);
+	}
+	else if (position == "BottomRight") {
+	    glRasterPos3i(4, -11, -4);
+	}
+	else if (position == "TopLeft") {
+	    glRasterPos3i(-7, 11, 7);
+	}
+	else if (position == "BottomLeft") {
+	    glRasterPos3i(-7, -11, 7);
+	}
+	else if (position == "Center") {
+	    glRasterPos3i(1, 5, 5);
+	}
+	else {
+	    glRasterPos3i(0, 0, 0);
+	}
+    for (std::string::iterator i = s.begin(); i != s.end(); ++i)
+    {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *i);
+    }
+}
 
 /* display function - GLUT display callback function
  *		clears the screen, sets the camera position, draws the ground plane and movable box
@@ -130,6 +190,11 @@ void display(void)
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, diff);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, spec);
 
+	// displayText("This is text", "TopRight");
+	// displayText("This is text", "BottomRight");
+	// displayText("This is text", "TopLeft");
+	// displayText("This is text", "BottomLeft");
+	// displayText("This is text", "Center");
 
 	// draw platform
 	platform.drawPlatform();
@@ -142,7 +207,7 @@ void display(void)
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambMat2);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffMat2);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specMat2);
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 27);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shine2);
         block.drawBlock();
 	glPopMatrix();
 
@@ -182,7 +247,7 @@ int main(int argc, char** argv)
 	glutInitWindowSize(800, 800);
 	glutInitWindowPosition(100, 100);
 
-	glutCreateWindow("Snowman");	//creates the window
+	glutCreateWindow("Bloxorz");	//creates the window
 
 	glutDisplayFunc(display);	//registers "display" as the display callback function
 	glutKeyboardFunc(keyboard);
