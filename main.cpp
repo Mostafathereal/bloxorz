@@ -41,7 +41,7 @@ float specMat[4] = {0,1,0,1};
 
 
 float ambMat2[4] = {0.5,0.5,0.5,1};
-float diffMat2[4] = {0,1,0,1};
+float diffMat2[4] = {0,1,0,1}; 
 float specMat2[4] = {0,1,0,1};
 
 
@@ -60,11 +60,12 @@ Block block(initMatrix);
  * Platform object 
  */
 std::vector<std::vector<int>> platform_map = {
-	{1, 1, 1, 1, 1},
-	{1, 1, 1, 1, 1},
-	{1, 1, 1, 1, 1},
-	{1, 1, 1, 1, 1},
-	{1, 1, 1, 1, 1}
+	{1, 1, 1, 1, 1, 1},
+	{1, 1, 1, 1, 1, 1},
+	{1, 1, 1, 1, 1, 1},
+	{1, 1, 0, 1, 1, 1},
+	{1, 1, 1, 0, 1, 1},
+	{1, 1, 1, 1, 1, 1}
 };
 Platform platform(platform_map);
 
@@ -107,8 +108,8 @@ void init(void)
 	glLoadIdentity();
 	glOrtho(-10, 10, -10, 10, -10, 80);
 
-	//glDisable(GL_LIGHTING);
-	//glDisable(GL_LIGHT0);
+	// glDisable(GL_LIGHTING);
+	// glDisable(GL_LIGHT0);
 	// gluPerspective(45, 1, 1, 100);
 } 
 
