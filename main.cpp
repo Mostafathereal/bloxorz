@@ -59,6 +59,10 @@ float shine2 =76.8f ;
 // float specMat3[4] = {0,1,0,1};
 // float shine3 = 27.0f;
 
+// float ambMat2[4] = {0.5,0.5,0.5,1};
+// float diffMat2[4] = {0,1,0,1}; 
+// float specMat2[4] = {0,1,0,1};
+
 
 /* Block */
 float platformSize = 200;
@@ -75,11 +79,12 @@ Block block(initMatrix);
  * Platform object 
  */
 std::vector<std::vector<int>> platform_map = {
-	{1, 1, 1, 1, 1},
-	{1, 1, 1, 1, 1},
-	{1, 1, 1, 1, 1},
-	{1, 1, 1, 1, 1},
-	{1, 1, 1, 1, 1}
+	{1, 1, 1, 1, 1, 1},
+	{1, 1, 1, 1, 1, 1},
+	{1, 1, 1, 1, 1, 1},
+	{1, 1, 0, 1, 1, 1},
+	{1, 1, 1, 0, 1, 1},
+	{1, 1, 1, 1, 1, 1}
 };
 Platform platform(platform_map);
 
