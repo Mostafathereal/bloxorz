@@ -34,14 +34,10 @@ class Block{
     float posZ2;
 
     //normialized origin of block (real time, includes animational changes)
-    float offsetX;
-    float offsetY;
-    float offsetZ;
+    Point3D offset;
 
     //normialized origin of block (does not include animational changes, only stationary positions)
-    float originX;
-    float originY;
-    float originZ;
+    Point3D origin;
 
     //length of base of block
     float baseLength;
@@ -72,6 +68,9 @@ class Block{
     //texture
     Texture2D texture;
 
+    //game state
+    int gameState;
+
     Block(GLfloat* initMatrix);
 
     void drawBlock();
@@ -83,6 +82,8 @@ class Block{
     void undoMove();
     void setOrigin();
     void changeTexture(char* file);
+    void fallingAnimation();
+    Quaternion blockRotation(Quaternion rotateQuaternion, float XOffset, float ZOffset);
 };
 
 #endif
