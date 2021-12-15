@@ -73,6 +73,11 @@ Block::Block(GLfloat* initMatrix, Platform platform){
 
     //game state, playing = 0, lost/losing = 1, winning/won = 2
     this->gameState = 0;
+
+    // falling animation type, -1 when not set
+    this->fallingAnimationType = -1;
+    
+
     //default texture is already set (no need to do it here, we use malloc for texture array)
 }
 
@@ -229,11 +234,21 @@ void Block::update(){
             // -2 because 1 is added every time for moves
             this->numMoves -= 2;
 
+
         // ....................
-        std::cout << this->platform.checkFall((int)this->posX1, (int)this->posZ1, (int)this->posX2, (int)this->posZ2, this->orientation) << std::endl; 
+        int gameStateUpdate = this->platform.checkFall((int)this->posX1, (int)this->posZ1, (int)this->posX2, (int)this->posZ2, this->orientation);
+        if(0 < gameStateUpdate && gameStateUpdate <= 3){
+            this->fallingAnimationType = gameStateUpdate;
+            this->gameState = 1;
+        }
+        else if(gameStateUpdate == 4){
+            this->direction = NA;
+        }
+        else
+            this->direction = NA;
         // ...................
 
-        this->direction = NA;
+        
         
     }
 }
@@ -288,7 +303,7 @@ void Block::changeTexture(char* file){
 }
 
 void Block::fallingAnimation(){
-    int fallType = 3;
+    int fallType = this->fallingAnimationType;
     Quaternion tempQuat;
 
     if(fallType == 3){
@@ -312,7 +327,7 @@ void Block::fallingAnimation(){
             default:{}
         }
     }
-    else if(fallType == 1){
+    else if(fallType == 2){
         if(this->orientation == HorizontalInZ){
             tempQuat = blockRotation(Quaternion(90, -1, 0, 0), 0, this->DownRotationOffset/2);
         }
