@@ -20,8 +20,10 @@ class Platform{
     public:
         std::vector<std::vector<int>> tiles;
 
-        Platform(std::vector<std::vector<int>> &map);
+        Platform(std::vector<std::vector<int>> &map, int startX, int startY);
         Platform();
+        int startingX;
+        int startingY;
 
         void drawPlatform();
 

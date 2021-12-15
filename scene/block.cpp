@@ -36,8 +36,8 @@ Block::Block(GLfloat* initMatrix, Platform platform){
     this->heightLength = 2;
 
     //postion of top left corner of block
-    this->posX1 = 2;
-    this->posZ1 = 2;
+    this->posX1 = this->platform.startingX;
+    this->posZ1 = this->platform.startingY;
 
     //position of bottom right corner of block
     this->posX2 = this->posX1 + this->baseLength;
@@ -79,6 +79,61 @@ Block::Block(GLfloat* initMatrix, Platform platform){
     
 
     //default texture is already set (no need to do it here, we use malloc for texture array)
+}
+
+void Block::reset(Platform platform){
+    this->platform = platform;
+
+    this->quat = Quaternion();
+    this->rotQuat = Quaternion();
+    this->rotQuat.populateRotationMatrix(this->rotationMatrix);
+
+    this->platform = platform;
+
+
+    //base length and height of block
+    this->baseLength = 1;
+    this->heightLength = 2;
+
+    //postion of top left corner of block
+    this->posX1 = this->platform.startingX;
+    this->posZ1 = this->platform.startingY;
+
+    //position of bottom right corner of block
+    this->posX2 = this->posX1 + this->baseLength;
+    this->posZ2 = this->posZ1 + this->baseLength;
+
+
+    //Both these points are normalized around origin
+    //origin point of block in real time (keeps track of origin in between animations as well)
+    this->offset.setPoint(this->baseLength / 2, this->heightLength / 2, this->baseLength / 2);
+
+    //origin point of block (only keeps track of origin inbetween animations)
+    this->origin.setPoint(this->baseLength / 2, this->heightLength / 2, this->baseLength / 2);
+
+    //orientation of block (starts out standing)
+    this->orientation = Standing;
+
+    //direction of rotation (NA when not in animation rotation)
+    this->direction = NA;
+
+    //rotation increments and t (neeeded for SLERP interpolation). rotIncrement = 1/x where x is number of frames for animation.
+    this->rotIncrement = 1.0f / 10;
+    this->currentT = 0;
+
+    // offsets to make sure right and down rotate properly since their axis of rotation is not at origin
+    this->RightRotationOffset = this->baseLength;
+    this->DownRotationOffset = this->baseLength;
+
+    //move history (store as undo moves)
+    this->undoMoveHist = std::vector<Direction>();
+
+    //game state, playing = 0, losingAnimation = 1, Lost = 2, winning Animation = 3, Won = 4
+    this->gameState = 0;
+
+    // falling animation type, -1 when not set
+    this->fallingAnimationType = -1;
+
 }
 
 void Block::drawBlock(){

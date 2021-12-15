@@ -93,6 +93,8 @@ class Block{
     void fallingAnimation();
     void freeFallAnimation();
     void winningAnimation();
+    void reset(Platform platform);
+
     Quaternion blockRotation(Quaternion rotateQuaternion, float XOffset, float ZOffset);
 };
 

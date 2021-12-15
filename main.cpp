@@ -24,10 +24,10 @@
 
 
 /* Display screens*/
-bool mainMenu = false;
+bool mainMenu = true;
 bool displayObjects = false;
 bool winScreen = false;
-bool looseScreen = true;
+bool looseScreen = false;
 
 
 /* camera */
@@ -91,7 +91,38 @@ std::vector<std::vector<int>> platform_map = {
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
 
-Platform platform(platform_map);
+std::vector<std::vector<int>> platform_map1 = {
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 1, 1, 1, 1, 1, 1, 0, 0},
+	{0, 0, 1, 3, 1, 1, 2, 1, 0, 0},
+	{0, 0, 1, 1, 1, 0, 1, 1, 0, 0},
+	{0, 0, 1, 1, 1, 1, 2, 1, 0, 0},
+	{0, 0, 1, 2, 1, 2, 1, 1, 0, 0},
+	{0, 0, 1, 1, 1, 1, 1, 1, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+};
+
+std::vector<std::vector<int>> platform_map2 = {
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 1, 1, 1, 1, 1, 0, 0, 0},
+	{0, 0, 1, 3, 1, 0, 0, 1, 0, 0},
+	{0, 0, 2, 2, 1, 1, 1, 1, 0, 0},
+	{0, 0, 1, 1, 1, 1, 2, 1, 0, 0},
+	{0, 0, 1, 1, 1, 2, 1, 1, 0, 0},
+	{0, 0, 1, 1, 0, 1, 1, 2, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+};
+
+Platform platform(platform_map, 2, 2);
+Platform platform1(platform_map1, 2, 2);
+Platform platform2(platform_map2, 2, 2);
+
+std::vector<Platform> platformList = {platform, platform1, platform2};
+int platformLevel = 0; 
 
 /*
  *block object
@@ -300,6 +331,27 @@ void display(void){
 void FPS(int value){
 	glutPostRedisplay();
 	glutTimerFunc(17, FPS, 0);
+	if (block.gameState == 2){
+		displayObjects = false;
+		mainMenu = false;
+		winScreen = false;
+		looseScreen = true;
+		platformLevel = 0;
+		block.reset(platformList[platformLevel]);
+
+	}
+	else if (block.gameState == 4){
+		if (platformLevel == platformList.size() - 1){
+			displayObjects = false;
+			mainMenu = false;
+			winScreen = true;
+			looseScreen = false;
+		}
+		platformLevel = (platformLevel + 1) % platformList.size();
+		block.reset(platformList[platformLevel]);
+
+
+	}
 }
 
 /* main function - program entry point */

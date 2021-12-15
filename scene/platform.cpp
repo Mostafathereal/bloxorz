@@ -23,8 +23,10 @@ float mat_diffuse[] = { 1,1,1,1 };
 float mat_specular[] ={ 1,1,1,1 };
 float shine[] = {32};
 
-Platform::Platform(std::vector<std::vector<int>> &map){
+Platform::Platform(std::vector<std::vector<int>> &map, int startX, int startY){
     this->tiles = map;
+    this->startingX = startX;
+    this->startingY = startY;
 }
 
 Platform::Platform(){
