@@ -15,6 +15,7 @@
 #include "../quaternion.h"
 #include "../blockOrientations.h"
 #include "../texture2D.h"
+#include "platform.h"
 
 class Block{
     public:
@@ -72,7 +73,11 @@ class Block{
     //texture
     Texture2D texture;
 
-    Block(GLfloat* initMatrix);
+    // platform
+    Platform platform;
+
+    Block(GLfloat* initMatrix, Platform platform);
+    // Block();
 
     void drawBlock();
 
