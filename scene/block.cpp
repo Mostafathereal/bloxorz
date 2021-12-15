@@ -9,6 +9,7 @@
 #  include <GL/freeglut.h>
 #endif
 #include <iostream>
+#include <cmath>
 #include "block.h"
 #include "../texture2D.h"
 #include "../blockOrientations.h"
@@ -43,16 +44,12 @@ Block::Block(GLfloat* initMatrix, Platform platform){
     this->posZ2 = this->posZ1 + this->baseLength;
 
 
-    //Both these origin points are normalized around origin
+    //Both these points are normalized around origin
     //origin point of block in real time (keeps track of origin in between animations as well)
-    this->offsetX = this->baseLength / 2;
-    this->offsetY = this->heightLength / 2;
-    this->offsetZ = this->baseLength / 2;
+    this->offset.setPoint(this->baseLength / 2, this->heightLength / 2, this->baseLength / 2);
 
     //origin point of block (only keeps track of origin inbetween animations)
-    this->originX = this->baseLength / 2;
-    this->originY = this->heightLength / 2;
-    this->originZ = this->baseLength / 2;
+    this->origin.setPoint(this->baseLength / 2, this->heightLength / 2, this->baseLength / 2);
 
     //orientation of block (starts out standing)
     this->orientation = Standing;
@@ -60,7 +57,7 @@ Block::Block(GLfloat* initMatrix, Platform platform){
     //direction of rotation (NA when not in animation rotation)
     this->direction = NA;
 
-    //rotation increments and t (neeeded for SLERP interpolation)
+    //rotation increments and t (neeeded for SLERP interpolation). rotIncrement = 1/x where x is number of frames for animation.
     this->rotIncrement = 1.0f / 10;
     this->currentT = 0;
 
@@ -74,18 +71,20 @@ Block::Block(GLfloat* initMatrix, Platform platform){
     //number of moves
     this->numMoves = 0;
 
+    //game state, playing = 0, lost/losing = 1, winning/won = 2
+    this->gameState = 0;
     //default texture is already set (no need to do it here, we use malloc for texture array)
 }
 
 void Block::drawBlock(){
     glPushMatrix();
         //translate matrix to current origin of block
-        glTranslatef(this->posX1 + this->offsetX, this->offsetY, this->posZ1 + this->offsetZ);
+        glTranslatef(this->posX1 + this->offset.mX, this->offset.mY, this->posZ1 + this->offset.mZ);
 
         //apply rotation transformations to model view matrix
         glMultMatrixf(this->rotationMatrix);
 
-        //scale block adn draw
+        //scale block and draw
         glScalef(this->baseLength, this->heightLength, this->baseLength);
         glutTexturedSolidCube(1);
     glPopMatrix();
@@ -93,7 +92,7 @@ void Block::drawBlock(){
 
 void Block::setOrientation(){
     if(this->orientation == Standing){
-        if(this->posX2 - this->posX1 > 1){
+        if(abs(this->posX2 - this->posX1) > 1){
             this->orientation = HorizontalInX;
         }
         else{
@@ -110,41 +109,36 @@ void Block::setOrientation(){
             this->orientation = Standing;
         }
     }
+
+    if(this->orientation == Standing){
+        std::cout << "Standing" << std::endl;
+    }
+    else if (this->orientation == HorizontalInX){
+        std::cout << "Horizontal in X" << std::endl;
+    }
+    else{
+        std::cout << "Horizontal in Z" << std::endl;
+    }
 }
 void Block::setOrigin(){
     //set the cube origin coords and rotation offsets to normalized values based their orientation
     if(this->orientation == Standing){
-        this->originX = this->baseLength / 2;
-        this->originY = this->heightLength / 2;
-        this->originZ = this->baseLength / 2;
-
-        this->offsetX = this->baseLength / 2;
-        this->offsetY = this->heightLength / 2;
-        this->offsetZ = this->baseLength / 2;
+        this->origin.setPoint(this->baseLength / 2, this->heightLength / 2, this->baseLength / 2);
+        this->offset.setPoint(this->baseLength / 2, this->heightLength / 2, this->baseLength / 2);
 
         this->RightRotationOffset = this->baseLength;
         this->DownRotationOffset = this->baseLength;
     }
     else if(this->orientation == HorizontalInX){
-        this->originX = this->heightLength / 2;
-        this->originY = this->baseLength / 2;
-        this->originZ = this->baseLength / 2;
-
-        this->offsetX = this->heightLength / 2;;
-        this->offsetY = this->baseLength / 2;
-        this->offsetZ = this->baseLength / 2;
+        this->origin.setPoint(this->heightLength / 2, this->baseLength / 2, this->baseLength / 2);
+        this->offset.setPoint(this->heightLength / 2, this->baseLength / 2, this->baseLength / 2);
 
         this->RightRotationOffset = this->heightLength;
         this->DownRotationOffset = this->baseLength;
     }
     else{
-        this->originX = this->baseLength / 2;
-        this->originY = this->baseLength / 2;
-        this->originZ = this->heightLength / 2;;
-
-        this->offsetX = this->baseLength / 2;
-        this->offsetY = this->baseLength / 2;
-        this->offsetZ = this->heightLength / 2;;
+        this->origin.setPoint(this->baseLength / 2, this->baseLength / 2, this->heightLength / 2);
+        this->offset.setPoint(this->baseLength / 2, this->baseLength / 2, this->heightLength / 2);
 
         this->RightRotationOffset = this->baseLength;
         this->DownRotationOffset = this->heightLength;
@@ -171,6 +165,11 @@ void Block::update(){
     // if direction is not set (not currently animating), return or increment t to get next quaternion in the animation
     if(this->direction == NA)
         return;
+    else if (this->gameState == 1){
+        this->currentT += this->rotIncrement;
+        fallingAnimation();
+        return;
+    }
     else
         this->currentT += this->rotIncrement;
     
@@ -180,48 +179,22 @@ void Block::update(){
     switch(this->direction){
         case UndoDown:
         case Up:{
-
-            // used 2 quaternions here tempQuat is total rotations while tempRotQuat records rotation along the current animation (rotating up in this case)
-            tempQuat = slerp(this->quat, Quaternion(90, -1, 0, 0)  * this->quat, this->currentT);
-            Quaternion tempRotQuat = slerp(Quaternion(), Quaternion(90, -1, 0, 0), this->currentT);
-
-            Point3D rotatedPoint = rotateAboutUnitQuaternion(tempRotQuat, Point3D(this->originX, this->originY, this->originZ));
-            this->offsetX = rotatedPoint.mX;
-            this->offsetY = rotatedPoint.mY;
-            this->offsetZ = rotatedPoint.mZ;
+            tempQuat = blockRotation(Quaternion(90, -1, 0, 0), 0, 0);
             break;
         }
         case UndoUp:
         case Down:{
-            tempQuat = slerp(this->quat, Quaternion(90, 1, 0, 0)  * this->quat, this->currentT);
-            Quaternion tempRotQuat = slerp(Quaternion(), Quaternion(90, 1, 0, 0), this->currentT);
-
-            Point3D rotatedPoint = rotateAboutUnitQuaternion(tempRotQuat, Point3D(this->originX, this->originY, this->originZ - this->DownRotationOffset));
-            this->offsetX = rotatedPoint.mX;
-            this->offsetY = rotatedPoint.mY;
-            this->offsetZ = rotatedPoint.mZ + this->DownRotationOffset;
+            tempQuat = blockRotation(Quaternion(90, 1, 0, 0), 0, this->DownRotationOffset);
             break;
         }
         case UndoRight:
         case Left:{
-            tempQuat = slerp(this->quat, Quaternion(90, 0, 0, 1)  * this->quat, this->currentT);
-            Quaternion tempRotQuat = slerp(Quaternion(), Quaternion(90, 0, 0, 1), this->currentT);
-
-            Point3D rotatedPoint = rotateAboutUnitQuaternion(tempRotQuat, Point3D(this->originX, this->originY, this->originZ));
-            this->offsetX = rotatedPoint.mX;
-            this->offsetY = rotatedPoint.mY;
-            this->offsetZ = rotatedPoint.mZ;
+            tempQuat = blockRotation(Quaternion(90, 0, 0, 1), 0, 0);
             break;
         }
         case UndoLeft:
         case Right:{
-            tempQuat = slerp(this->quat, Quaternion(90, 0, 0, -1) * this->quat, this->currentT);
-            Quaternion tempRotQuat = slerp(Quaternion(), Quaternion(90, 0, 0, -1), this->currentT);
-            
-            Point3D rotatedPoint = rotateAboutUnitQuaternion(tempRotQuat, Point3D(this->originX - this->RightRotationOffset, this->originY, this->originZ));
-            this->offsetX = rotatedPoint.mX + this->RightRotationOffset;
-            this->offsetY = rotatedPoint.mY;
-            this->offsetZ = rotatedPoint.mZ;
+            tempQuat = blockRotation(Quaternion(90, 0, 0, -1), this->RightRotationOffset, 0);
             break;
         }
         case NA:{}
@@ -312,4 +285,66 @@ void Block::updatePosition(){
 void Block::changeTexture(char* file){
     free(this->texture.img);
     this->texture = Texture2D(file);
+}
+
+void Block::fallingAnimation(){
+    int fallType = 3;
+    Quaternion tempQuat;
+
+    if(fallType == 3){
+        switch(this->direction){
+            case Up:{
+                tempQuat = blockRotation(Quaternion(90, -1, 0, 0), 0, this->DownRotationOffset);
+                break;
+            }
+            case Down:{
+                tempQuat = blockRotation(Quaternion(90, 1, 0, 0), 0, 0);
+                break;
+            }
+            case Left:{
+                tempQuat = blockRotation(Quaternion(90, 0, 0, 1), this->RightRotationOffset, 0);
+                break;
+            }
+            case Right:{ 
+                tempQuat = blockRotation(Quaternion(90, 0, 0, -1), 0, 0);
+                break;
+            }
+            default:{}
+        }
+    }
+    else if(fallType == 1){
+        if(this->orientation == HorizontalInZ){
+            tempQuat = blockRotation(Quaternion(90, -1, 0, 0), 0, this->DownRotationOffset/2);
+        }
+        else if(this->orientation == HorizontalInX){
+            tempQuat = blockRotation(Quaternion(90, 0, 0, 1), this->RightRotationOffset/2, 0);
+        }
+    }
+    else{
+        if(this->orientation == HorizontalInZ){
+            tempQuat = blockRotation(Quaternion(90, 1, 0, 0), 0, this->DownRotationOffset/2);
+        }
+        else if(this->orientation == HorizontalInX){
+            tempQuat = blockRotation(Quaternion(90, 0, 0, -1), this->RightRotationOffset/2, 0);
+        }
+    }
+    
+    //set rot quaternion and populate rotation matrix accordingly
+    this->rotQuat = tempQuat;
+    this->rotQuat.populateRotationMatrix(this->rotationMatrix);
+    if(this->currentT >= 1){
+        this->direction = NA;
+    }
+    // this->setOrigin();
+}
+
+Quaternion Block::blockRotation(Quaternion rotateQuaternion, float XOffset, float ZOffset){
+    // used 2 quaternions here. blockRotationQuat is for the total rotation of the block (from the beginning). While pointRotationQuat is for rotating the normalized block point
+    Quaternion blockRotationQuat = slerp(this->quat, rotateQuaternion * this->quat, this->currentT);
+    Quaternion pointRotationQuat = slerp(Quaternion(), rotateQuaternion, this->currentT);
+    
+    Point3D rotatedPoint = rotateAboutUnitQuaternion(pointRotationQuat, Point3D(this->origin.mX - XOffset, this->origin.mY, this->origin.mZ - ZOffset));
+    this->offset.setPoint(rotatedPoint.mX + XOffset, rotatedPoint.mY, rotatedPoint.mZ + ZOffset);
+
+    return blockRotationQuat;
 }

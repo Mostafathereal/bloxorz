@@ -11,6 +11,7 @@ public:
 
     float distanceTo(Point3D other);
     float fastDistanceTo(Point3D other);
+    void setPoint(float inX, float inY, float inZ);
 };
 
 class Vec3D {
