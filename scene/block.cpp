@@ -71,7 +71,7 @@ Block::Block(GLfloat* initMatrix, Platform platform){
     //number of moves
     this->numMoves = 0;
 
-    //game state, playing = 0, lost/losing = 1, winning/won = 2
+    //game state, playing = 0, losingAnimation = 1, Lost = 2, winning Animation = 3, Won = 4
     this->gameState = 0;
 
     // falling animation type, -1 when not set
@@ -170,9 +170,24 @@ void Block::update(){
     // if direction is not set (not currently animating), return or increment t to get next quaternion in the animation
     if(this->direction == NA)
         return;
+    // if game is over
+    else if (this->gameState == 2){
+        std::cout << "game Over!!" << std::endl;
+        return;
+    }
+    // if game is won
+    else if (this->gameState == 4){
+        std::cout << "game Won!!!" << std::endl;
+        return;
+    }
+    // if game is lost and loss animation needs to be displayed
     else if (this->gameState == 1){
-        this->currentT += this->rotIncrement;
         fallingAnimation();
+        return;
+    }
+    //if game is won and winning animation needs to be displayed
+    else if (this->gameState == 3){
+        winningAnimation();
         return;
     }
     else
@@ -235,17 +250,18 @@ void Block::update(){
             this->numMoves -= 2;
 
 
-        // ....................
+        // get state of block after move: either the block is on platform (0), its off of platform (1, 2, 3 for different fall types), or its properly on winning tile (4)
         int gameStateUpdate = this->platform.checkFall((int)this->posX1, (int)this->posZ1, (int)this->posX2, (int)this->posZ2, this->orientation);
-        if(0 < gameStateUpdate && gameStateUpdate <= 3){
+        if (gameStateUpdate == 0){
+            this->direction = NA;
+        }
+        else if (gameStateUpdate <= 3){
             this->fallingAnimationType = gameStateUpdate;
             this->gameState = 1;
         }
-        else if(gameStateUpdate == 4){
-            this->direction = NA;
-        }
-        else
-            this->direction = NA;
+        else{
+            this->gameState = 3;
+        }   
         // ...................
 
         
@@ -255,7 +271,7 @@ void Block::update(){
 
 void Block::updatePosition(){
 
-    //update logic to update both the positions (will be used for collision later)
+    //update logic to update both the positions
     switch(this->direction){
         case UndoDown:
         case Up:{
@@ -306,6 +322,16 @@ void Block::fallingAnimation(){
     int fallType = this->fallingAnimationType;
     Quaternion tempQuat;
 
+    //if rotating fall animation is done, start free fall animation
+    if (this->currentT >= 1){
+        this->freeFallAnimation();
+        return;
+    }
+
+    //update t for rotating fall animation
+    this->currentT += this->rotIncrement;
+
+    // if block is completely off the platform
     if(fallType == 3){
         switch(this->direction){
             case Up:{
@@ -327,6 +353,7 @@ void Block::fallingAnimation(){
             default:{}
         }
     }
+    // if block's bottom or right side is on platform
     else if(fallType == 2){
         if(this->orientation == HorizontalInZ){
             tempQuat = blockRotation(Quaternion(90, -1, 0, 0), 0, this->DownRotationOffset/2);
@@ -335,6 +362,7 @@ void Block::fallingAnimation(){
             tempQuat = blockRotation(Quaternion(90, 0, 0, 1), this->RightRotationOffset/2, 0);
         }
     }
+    // if block's top or left side is on platform
     else{
         if(this->orientation == HorizontalInZ){
             tempQuat = blockRotation(Quaternion(90, 1, 0, 0), 0, this->DownRotationOffset/2);
@@ -347,10 +375,67 @@ void Block::fallingAnimation(){
     //set rot quaternion and populate rotation matrix accordingly
     this->rotQuat = tempQuat;
     this->rotQuat.populateRotationMatrix(this->rotationMatrix);
+
     if(this->currentT >= 1){
-        this->direction = NA;
+        //need to correct falling direction when half of block is on platform
+        if(fallType == 2){
+            if(this->orientation == HorizontalInZ){
+                this->direction = Up;
+            }
+            else if(this->orientation == HorizontalInX){
+                this->direction = Left;
+            }
+        }
+        else if (fallType == 1){
+            if(this->orientation == HorizontalInZ){
+                this->direction = Down;
+            }
+            else if(this->orientation == HorizontalInX){
+                this->direction = Right;
+            }
+        }
     }
-    // this->setOrigin();
+}
+
+void Block::freeFallAnimation(){
+    Quaternion tempQuat;
+
+    //rotate block in falling direction
+    switch(this->direction){
+        case Up:{
+            tempQuat = Quaternion(6, -1, 0, 0);
+            break;
+        }
+        case Down:{
+            tempQuat = Quaternion(6, 1, 0, 0);
+            break;
+        }
+        case Left:{
+            tempQuat = Quaternion(6, 0, 0, 1);
+            break;
+        }
+        case Right:{ 
+            tempQuat = Quaternion(6, 0, 0, -1);
+            break;
+        }
+        default:{}
+    }
+
+    this->rotQuat = tempQuat * this->rotQuat;
+    this->rotQuat.populateRotationMatrix(this->rotationMatrix);
+    this->offset.mY -= 0.1;
+
+    //falling animations over, set game state to lost
+    if(this->offset.mY <= -10)
+        this->gameState = 2;
+}
+
+void Block::winningAnimation(){
+    this->offset.mY -= 0.02;
+
+    //winning animation over, set game state to won
+    if(this->offset.mY <= -this->heightLength/2)
+        this->gameState = 4;
 }
 
 Quaternion Block::blockRotation(Quaternion rotateQuaternion, float XOffset, float ZOffset){
@@ -360,6 +445,5 @@ Quaternion Block::blockRotation(Quaternion rotateQuaternion, float XOffset, floa
     
     Point3D rotatedPoint = rotateAboutUnitQuaternion(pointRotationQuat, Point3D(this->origin.mX - XOffset, this->origin.mY, this->origin.mZ - ZOffset));
     this->offset.setPoint(rotatedPoint.mX + XOffset, rotatedPoint.mY, rotatedPoint.mZ + ZOffset);
-
     return blockRotationQuat;
 }
