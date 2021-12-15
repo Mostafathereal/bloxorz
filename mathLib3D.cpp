@@ -22,6 +22,12 @@ float Point3D::fastDistanceTo(Point3D other) {
 	return pow(this->mX - other.mX, 2) + pow(this->mY - other.mY, 2) + pow(this->mZ - other.mZ, 2);
 }
 
+void Point3D::setPoint(float inX, float inY, float inZ){
+	this->mX = inX;
+	this->mY = inY;
+	this->mZ = inZ;
+}
+
 Vec3D::Vec3D() {
 	this->mX = 1.0f;
 	this->mY = 1.0f;

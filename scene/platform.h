@@ -13,14 +13,19 @@
 #endif
 
 #include <vector>
+#include "../blockOrientations.h"
+
 
 class Platform{
     public:
         std::vector<std::vector<int>> tiles;
 
         Platform(std::vector<std::vector<int>> &map);
+        Platform();
 
         void drawPlatform();
+
+        int checkFall(int posX1, int posZ1, int posX2, int posZ2, Orientation orientation);
 
 };
 

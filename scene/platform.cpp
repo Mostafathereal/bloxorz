@@ -11,6 +11,8 @@
 #include "platform.h"
 #include "../TextureList.h"
 #include <iostream>
+#include "../blockOrientations.h"
+
 
 // float mat_ambient[] ={ 0.24725f, 0.1995f, 0.0745f, 1.0f };
 // float mat_diffuse[] = {0.75164f, 0.60648f, 0.22648f, 1.0f };
@@ -24,6 +26,11 @@ float shine[] = {32};
 Platform::Platform(std::vector<std::vector<int>> &map){
     this->tiles = map;
 }
+
+Platform::Platform(){
+    this->tiles = std::vector<std::vector<int>>();
+}
+
 
 void Platform::drawPlatform(){
     glPushMatrix();
@@ -60,6 +67,63 @@ void Platform::drawPlatform(){
 
 }
 
+// standing fall = full fall, no fall
+// sideways: half fall, full fall, no fall
+// no fall = 0, half fall right = 1, half fall left = 2, full fall = 3, win = 4
+
+int Platform::checkFall(int posX1, int posZ1, int posX2, int posZ2, Orientation orientation){
+    std::cout << posX1 << ", " << posZ1 << ", " << posX2 << ", " << posZ2 << ", " << orientation << std::endl;
+
+    if (orientation == Standing){
+        
+        // full fall condition
+        if (this->tiles[posX1][posZ1] == 0){ return 3; }
+
+        // winning condition
+        if (this->tiles[posX1][posZ1]  == 3){ return 4; }
+
+        return 0;
+    }
+
+    else if (orientation == HorizontalInX){
+        bool missingLeft = this->tiles[posX1][posZ1] == 0;
+        bool missingRight = this->tiles[posX1 + 1][posZ1] == 0;
+
+        if (missingLeft && missingRight){ return 3 ;}
+        else if (missingLeft){ return 2; }
+        else if (missingRight){ return 1; }
+        else{ return 0; }
+    }
+    else{
+        bool missingUp = this->tiles[posX1][posZ1] == 0;
+        bool missingDown = this->tiles[posX1][posZ1 + 1] == 0;
+
+        if (missingUp && missingDown){ return 3 ;}
+        else if (missingUp){ return 2; }
+        else if (missingDown){ return 1; }
+        else{ return 0; }
+    }
+}
+
+/*
+types of fall = {full fall, half fall, no fall}
+{type of fall} func(bounds_of_box, possibly orientation){
+
+    if block is upright{
+        check the 1 one block it is on
+        if no tile{
+            return fall attributes 
+        }
+    }
+    if block is sideways{
+        check block
+        check other block
+        if no tile{
+            rotation along which axis?
+        }
+    }
+}
+*/
 
 /*
 POINTERS

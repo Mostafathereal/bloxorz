@@ -68,25 +68,29 @@ float shine2 =76.8f ;
 float platformSize = 200;
 float base[3] = {0, -1, 0};
 
+/******
+ * Platform object 
+ */
+std::vector<std::vector<int>> platform_map = {
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 1, 1, 1, 1, 1, 1, 0, 0},
+	{0, 0, 1, 3, 1, 1, 1, 1, 0, 0},
+	{0, 0, 1, 1, 1, 1, 1, 1, 0, 0},
+	{0, 0, 1, 1, 1, 1, 2, 1, 0, 0},
+	{0, 0, 1, 1, 1, 2, 1, 1, 0, 0},
+	{0, 0, 1, 1, 1, 1, 1, 1, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+};
+
+Platform platform(platform_map);
 
 /*
  *block object
  */
 GLfloat initMatrix[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
-Block block(initMatrix);
-
-/******
- * Platform object 
- */
-std::vector<std::vector<int>> platform_map = {
-	{1, 1, 1, 2, 2, 1},
-	{1, 1, 1, 1, 2, 1},
-	{1, 1, 1, 1, 2, 1},
-	{1, 1, 0, 1, 1, 1},
-	{1, 1, 1, 0, 1, 1},
-	{1, 1, 1, 1, 1, 1}
-};
-Platform platform(platform_map);
+Block block(initMatrix, platform);
 
 void keyboard(unsigned char key, int x, int y)
 {
