@@ -72,6 +72,9 @@ class Block{
     //game state
     int gameState;
 
+    //falling animation type
+    int fallingAnimationType;
+
     // platform
     Platform platform;
 
