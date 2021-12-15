@@ -83,6 +83,7 @@ std::vector<std::vector<int>> platform_map = {
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
+
 Platform platform(platform_map);
 
 /*
@@ -207,6 +208,7 @@ void display(void)
 	glPushMatrix();
 		// glMultMatrixf(block.rotationMatrix);
 		//glRotatef(90, 0, 0, 1);
+		block.texture.setTexture();
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambMat2);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffMat2);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specMat2);
