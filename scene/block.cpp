@@ -15,13 +15,20 @@
 #include "../blockOrientations.h"
 #include "../mathLib3D.h"
 #include "../glutTexturedSolidCube.h"
+#include "platform.h"
 
-Block::Block(GLfloat* initMatrix){   
+// Block::Block(){   
+    
+// }
+
+Block::Block(GLfloat* initMatrix, Platform platform){   
     //initialize quaternions to keep track of orientation and rotation between animations
     this->quat = Quaternion();
     this->rotQuat = Quaternion();
     this->rotationMatrix = initMatrix;
     this->rotQuat.populateRotationMatrix(this->rotationMatrix);
+
+    this->platform = platform;
 
 
     //base length and height of block
@@ -29,8 +36,8 @@ Block::Block(GLfloat* initMatrix){
     this->heightLength = 2;
 
     //postion of top left corner of block
-    this->posX1 = 0;
-    this->posZ1 = 0;
+    this->posX1 = 2;
+    this->posZ1 = 2;
 
     //position of bottom right corner of block
     this->posX2 = this->posX1 + this->baseLength;
@@ -222,11 +229,11 @@ void Block::update(){
             // -2 because 1 is added every time for moves
             this->numMoves -= 2;
 
-        //TODO: Add checkfall function to determine whether block is off the platform or not
-        if(this->numMoves == -1)
-            this->gameState = 1;
-        else
-            this->direction = NA;
+        // ....................
+        std::cout << this->platform.checkFall((int)this->posX1, (int)this->posZ1, (int)this->posX2, (int)this->posZ2, this->orientation) << std::endl; 
+        // ...................
+
+        this->direction = NA;
         
     }
 }
