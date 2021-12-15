@@ -23,8 +23,15 @@
 #include "texture2D.h"
 
 
-float camPos[] = {5, 5, 5};
+/* Display screens*/
+bool mainMenu = false;
+bool displayObjects = false;
+bool winScreen = false;
+bool looseScreen = true;
 
+
+/* camera */
+float camPos[] = {8, 10, 10}; 
 
 /* LIGHTING */
 
@@ -95,32 +102,53 @@ Block block(initMatrix, platform);
 void keyboard(unsigned char key, int x, int y)
 {
 
-	/* key presses move the cube, if it isn't at the extents (hard-coded here) */
-	switch (key)
-	{
-		case 'a':
-		case 'A':
-			block.setDirection(Left);
-			break;
-
-		case 'w':
-		case 'W':
-			block.setDirection(Up);
-			break;
-
-		case 'd':
-		case 'D':
-			block.setDirection(Right);
-			break;
-
-		case 's':
-		case 'S':
-			block.setDirection(Down);
-			break;
-		case 'z':
-		case 'Z':
-			block.undoMove();
+	if (key == 'q'){
+		exit(0);
 	}
+
+	/* key presses move the cube, if it isn't at the extents (hard-coded here) */
+	if (displayObjects){
+		switch (key)
+		{
+			case 'a':
+			case 'A':
+				block.setDirection(Left);
+				break;
+
+			case 'w':
+			case 'W':
+				block.setDirection(Up);
+				break;
+
+			case 'd':
+			case 'D':
+				block.setDirection(Right);
+				break;
+
+			case 's':
+			case 'S':
+				block.setDirection(Down);
+				break;
+			case 'z':
+			case 'Z':
+				block.undoMove();
+				break;
+		}
+	}
+
+	if (mainMenu || looseScreen || winScreen){
+		switch (key)
+		{
+			case ' ':
+				mainMenu = false;
+				displayObjects = true;
+				winScreen = false;
+				looseScreen = false;
+				break;
+		}
+	}
+
+
 }
 
 
@@ -132,7 +160,7 @@ void init(void)
 	glColor3f(1, 1, 1);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(-10, 10, -10, 10, -10, 80);
+	glOrtho(-13, 13, -13, 13, -13, 80);
 
 	glEnable(GL_TEXTURE_2D);
 
@@ -177,11 +205,21 @@ void displayText(std::string s, std::string position)
     }
 }
 
+void showText(std::string s, Point3D pos, Point3D color)
+{
+    glColor3f(color.mX, color.mY, color.mZ);
+	glRasterPos3i(pos.mX, pos.mY, pos.mZ);
+    for (std::string::iterator i = s.begin(); i != s.end(); ++i)
+    {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *i);
+    }
+}
+
 /* display function - GLUT display callback function
  *		clears the screen, sets the camera position, draws the ground plane and movable box
  */
-void display(void)
-{
+void display(void){
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -189,49 +227,72 @@ void display(void)
 	gluLookAt(camPos[0], camPos[1], camPos[2], 0,0,0, 0,1,0);
 	glColor3f(1,1,1);
 
-	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, amb);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, diff);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, spec);
-
 	// displayText("This is text", "TopRight");
 	// displayText("This is text", "BottomRight");
 	// displayText("This is text", "TopLeft");
 	// displayText("This is text", "BottomLeft");
 	// displayText("This is text", "Center");
 
-	// draw platform
-	platform.drawPlatform();
-
-	// glDisable(GL_LIGHTING);
-	block.update();
-	glPushMatrix();
-		// glMultMatrixf(block.rotationMatrix);
-		//glRotatef(90, 0, 0, 1);
-		block.texture.setTexture();
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambMat2);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffMat2);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specMat2);
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shine2);
-        block.drawBlock();
-	glPopMatrix();
-
-	glBegin(GL_LINES);
-
-    glColor3f (1.0, 1.0, 0.0);
-    glVertex3f(0.0, 0.0, 0.0);
-    glVertex3f(5.0, 0.0, 0.0);
-
-    glColor3f (1.0, 1.0, 0.0);
-    glVertex3f(0.0, 0.0, 0.0);
-    glVertex3f(0.0, 5.0, 0.0);
-
-    glColor3f (1.0, 1.0, 0.0);
-    glVertex3f(0.0, 0.0, 0.0);
-    glVertex3f(0.0, 0.0, 5.0);
-    glEnd();
+	if(displayObjects){
+		glClearColor(0.5, 0.5, 0.5, 0);
 
 
+		glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+		glLightfv(GL_LIGHT0, GL_AMBIENT, amb);
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, diff);
+		glLightfv(GL_LIGHT0, GL_SPECULAR, spec);
+
+		// draw platform
+		block.platform.drawPlatform();
+
+		// glDisable(GL_LIGHTING);
+		block.update();
+		glPushMatrix();
+			// glMultMatrixf(block.rotationMatrix);
+			//glRotatef(90, 0, 0, 1);
+			block.texture.setTexture();
+			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambMat2);
+			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffMat2);
+			glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specMat2);
+			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shine2);
+			block.drawBlock();
+		glPopMatrix();
+
+		// glBegin(GL_LINES);
+
+		// glColor3f (1.0, 1.0, 0.0);
+		// glVertex3f(0.0, 0.0, 0.0);
+		// glVertex3f(5.0, 0.0, 0.0);
+
+		// glColor3f (1.0, 1.0, 0.0);
+		// glVertex3f(0.0, 0.0, 0.0);
+		// glVertex3f(0.0, 5.0, 0.0);
+
+		// glColor3f (1.0, 1.0, 0.0);
+		// glVertex3f(0.0, 0.0, 0.0);
+		// glVertex3f(0.0, 0.0, 5.0);
+		// glEnd();
+
+	}
+
+	if (mainMenu){
+		// glMatrixMode(GL_PROJECTION);
+		glClearColor(0.403, 0.094, 0.094, 0);
+		showText("Main menu", Point3D(2.2, 17, 5), Point3D(0.964, 0.905, 0.572));
+	}
+
+	if (winScreen){
+		// glMatrixMode(GL_PROJECTION);
+		glClearColor(0.403, 0.094, 0.094, 0);
+		showText("You Won!!!", Point3D(2.2, 17, 5), Point3D(0.964, 0.905, 0.572));
+	}
+
+	if (looseScreen){
+		// glMatrixMode(GL_PROJECTION);
+		glClearColor(0.403, 0.094, 0.094, 0);
+		showText("You lost :(", Point3D(2.2, 17, 5), Point3D(0.964, 0.905, 0.572));
+
+	}
 
 	glutSwapBuffers();
 }
