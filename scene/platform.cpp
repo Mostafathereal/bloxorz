@@ -44,7 +44,7 @@ void Platform::drawPlatform(){
 
         for(int row = 0; row < this->tiles.size(); ++row){
             for(int col = 0; col < this->tiles[0].size(); ++col){
-                if (this->tiles[row][col] > 0){
+                if (this->tiles[row][col] != 0){
                     // glColor3fv(colors[((row%2) + col)%2]);
                     TextureList[this->tiles[row][col] - 1].setTexture();
                     // std::cout << colors[((row%2) + col)%2] << std::endl;
