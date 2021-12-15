@@ -74,35 +74,46 @@ void Platform::drawPlatform(){
 int Platform::checkFall(int posX1, int posZ1, int posX2, int posZ2, Orientation orientation){
     std::cout << posX1 << ", " << posZ1 << ", " << posX2 << ", " << posZ2 << ", " << orientation << std::endl;
 
+    int fallType = 0;
+
     if (orientation == Standing){
         
         // full fall condition
-        if (this->tiles[posX1][posZ1] == 0){ return 3; }
+        if (this->tiles[posX1][posZ1] == 0){ fallType = 3; }
 
         // winning condition
-        if (this->tiles[posX1][posZ1]  == 3){ return 4; }
+        if (this->tiles[posX1][posZ1]  == 3){ fallType = 4; }
 
-        return 0;
+        //update one-time use tiles
+        if (this->tiles[posX1][posZ1] == 2){ this->tiles[posX1][posZ1] = 0; }
     }
 
     else if (orientation == HorizontalInX){
         bool missingLeft = this->tiles[posX1][posZ1] == 0;
         bool missingRight = this->tiles[posX1 + 1][posZ1] == 0;
 
-        if (missingLeft && missingRight){ return 3 ;}
-        else if (missingLeft){ return 2; }
-        else if (missingRight){ return 1; }
-        else{ return 0; }
+        if (missingLeft && missingRight){ fallType = 3;}
+        else if (missingLeft){ fallType = 2; }
+        else if (missingRight){ fallType = 1; }
+
+        //update one-time use tiles
+        if (this->tiles[posX1][posZ1] == 2){ this->tiles[posX1][posZ1] = 0; }
+        if (this->tiles[posX1 + 1][posZ1] == 2){ this->tiles[posX1 + 1][posZ1] = 0; }
     }
     else{
         bool missingUp = this->tiles[posX1][posZ1] == 0;
         bool missingDown = this->tiles[posX1][posZ1 + 1] == 0;
 
-        if (missingUp && missingDown){ return 3 ;}
-        else if (missingUp){ return 2; }
-        else if (missingDown){ return 1; }
-        else{ return 0; }
+        if (missingUp && missingDown){ fallType = 3 ;}
+        else if (missingUp){ fallType = 2; }
+        else if (missingDown){ fallType = 1; }
+
+        //update one-time use tiles
+        if (this->tiles[posX1][posZ1] == 2){ this->tiles[posX1][posZ1] = 0; }
+        if (this->tiles[posX1][posZ1 + 1] == 2){ this->tiles[posX1][posZ1 + 1] = 0; }
     }
+
+    return fallType;
 }
 
 /*

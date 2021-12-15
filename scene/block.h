@@ -91,6 +91,8 @@ class Block{
     void setOrigin();
     void changeTexture(char* file);
     void fallingAnimation();
+    void freeFallAnimation();
+    void winningAnimation();
     Quaternion blockRotation(Quaternion rotateQuaternion, float XOffset, float ZOffset);
 };
 
