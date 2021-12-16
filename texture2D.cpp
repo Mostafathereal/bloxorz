@@ -14,7 +14,7 @@
 
 
 Texture2D::Texture2D(){
-    this->img = LoadPPM("textures/lava_texture.ppm", &this->width, &this->height, &this->max);
+    this->img = LoadPPM("textures/lava.ppm", &this->width, &this->height, &this->max);
 }
 
 Texture2D::Texture2D(char* file){
