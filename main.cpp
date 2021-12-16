@@ -35,7 +35,7 @@ int screenWidth = 800;
 int screenHeight = 800;
 
 /* camera */
-float camPos[] = {5, 5, 15}; 
+float camPos[] = {20, 5, 15}; 
 float lookAt[] = {9.5, 0, 9.5};
 
 /* ortho plane size */
@@ -89,16 +89,12 @@ float base[3] = {0, -1, 0};
 std::vector<std::vector<int>> platform_map = {
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
 	{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
 	{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
 	{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
 	{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
 	{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-	{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-	{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-	{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-	{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-	{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 0, 0},
 	{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
 	{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
 	{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
@@ -160,22 +156,22 @@ void keyboard(unsigned char key, int x, int y)
 		{
 			case 'a':
 			case 'A':
-				block.setDirection(Left);
+				block.setDirection(Down);
 				break;
 
 			case 'w':
 			case 'W':
-				block.setDirection(Up);
+				block.setDirection(Left);
 				break;
 
 			case 'd':
 			case 'D':
-				block.setDirection(Right);
+				block.setDirection(Up);
 				break;
 
 			case 's':
 			case 'S':
-				block.setDirection(Down);
+				block.setDirection(Right);
 				break;
 			case 'z':
 			case 'Z':
@@ -341,6 +337,7 @@ void display(void){
 void FPS(int value){
 	glutPostRedisplay();
 	glutTimerFunc(17, FPS, 0);
+	if (block.gameState == 0){return;}
 	if (block.gameState == 2){
 		displayObjects = false;
 		mainMenu = false;
@@ -348,6 +345,7 @@ void FPS(int value){
 		looseScreen = true;
 		platformLevel = 0;
 		block.reset(platformList[platformLevel]);
+		block.numMoves = 0;
 
 	}
 	else if (block.gameState == 4){
@@ -356,6 +354,7 @@ void FPS(int value){
 			mainMenu = false;
 			winScreen = true;
 			looseScreen = false;
+			block.numMoves = 0;
 		}
 		platformLevel = (platformLevel + 1) % platformList.size();
 		block.reset(platformList[platformLevel]);
