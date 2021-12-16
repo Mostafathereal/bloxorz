@@ -13,7 +13,6 @@ Point3D::Point3D(float inX, float inY, float inZ) {
 	this->mZ = inZ;
 }
 
-
 float Point3D::distanceTo(Point3D other) {
 	return sqrt(pow(this->mX - other.mX, 2) + pow(this->mY - other.mY, 2) + pow(this->mZ - other.mZ, 2));
 }
