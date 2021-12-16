@@ -9,7 +9,7 @@
 ## Overview
 We implemented a block-character based game using Opengl. The player plays as a 1 by 1 by 2 block and he must navigate the block from the starting position to the endpoint marked by the black tile. There are currently three levels in our game. If any part of the block goes outside of the platform, the block will fall off the platform and the player will lose the game. The score is the number of moves that the player takes to finish the game (clear all three levels). A lower score is better since that means the player completed the game in fewer moves. The game also offers an undo functionality in case players want to retry/rethink a move. If the player loses the game, he must start from the first level, this is because our game only has three levels so its reasonable.
 
-The README that was submitted with the prototype can be found here [prototype.md](bloxorz/prototype.md)
+The README that was submitted with the prototype can be found here [bloxorz/prototype.md](prototype.md)
 
 ## Dev Environments
 - MacOS - Apple silicon
