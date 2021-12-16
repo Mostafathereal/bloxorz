@@ -121,7 +121,7 @@ Point3D rotateAboutUnitQuaternion(Quaternion q, Point3D p){
     c.y = - q.y;
     c.z = - q.z;
 
-    //rotate point. TODO:: optimize for normalized quaternions and/or intergrate this functionality with Quaternion class
+    //rotate point
     float x = p.mX * (q.w * q.w + q.x * q.x - q.y * q.y - q.z * q.z) + 2 * p.mY * (q.x * q.y - q.w * q.z) + 2 * p.mZ * (q.x * q.z + q.w * q.y);
     float y = 2 * p.mX * (q.x * q.y + q.w * q.z) + p.mY * (q.w * q.w - q.x * q.x + q.y * q.y - q.z * q.z) + 2 * p.mZ * (q.y * q.z - q.w * q.x);
     float z = 2 * p.mX * (q.x * q.z - q.w * q.y) + 2 * p.mY * (q.y * q.z + q.w * q.x) + p.mZ * (q.w * q.w - q.x * q.x - q.y * q.y + q.z * q.z);

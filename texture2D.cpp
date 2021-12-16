@@ -48,28 +48,22 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
     fscanf(fd,"%[^\n] ",b);
     if(b[0]!='P'|| b[1] != '3')
     {
-        printf("%s is not a PPM file!\n",file);
         exit(0);
     }
-    printf("%s is a PPM file\n", file);
     fscanf(fd, "%c",&c);
     while(c == '#')
     {
         fscanf(fd, "%[^\n] ", b);
-        printf("%s\n",b);
         fscanf(fd, "%c",&c);
     }
     ungetc(c,fd);
     fscanf(fd, "%d %d %d", &n, &m, &k);
-    
-    printf("%d rows  %d columns  max value= %d\n",n,m,k);
-    
+        
     nm = n*m;
     
     img = (GLubyte*)(malloc(3*sizeof(GLuint)*nm));
     
     s=255.0/k;
-    
     
     for(i=0;i<nm;i++)
     {
