@@ -67,7 +67,7 @@ class Block{
     int numMoves;
 
     //texture
-    Texture2D texture;
+    int textureID;
 
     //game state
     int gameState;
@@ -89,7 +89,7 @@ class Block{
     void setDirection(Direction directionToRoll);
     void undoMove();
     void setOrigin();
-    void changeTexture(char* file);
+    // void changeTexture(char* file);
     void fallingAnimation();
     void freeFallAnimation();
     void winningAnimation();
