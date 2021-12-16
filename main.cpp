@@ -272,7 +272,7 @@ void display(void){
 	glColor3f(1,1,1);
 
 	if(displayObjects){
-		glClearColor(0.5, 0.5, 0.5, 0);
+		glClearColor(0.5, 0.56862745, 0.56862745, 0);
 
 		glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 		glLightfv(GL_LIGHT0, GL_AMBIENT, amb);
@@ -310,23 +310,25 @@ void display(void){
 		gluOrtho2D(0, screenWidth, 0, screenHeight);
 		if (mainMenu){
 			glMatrixMode(GL_PROJECTION);
-			glClearColor(0.403, 0.094, 0.094, 0);
+			glClearColor(0.5, 0.56862745, 0.56862745, 0);
 			showText("Main menu", Point3D(screenWidth / 2 - 50, screenHeight * 3 / 4, 0), Point3D(0.964, 0.905, 0.572));
+			showText("Press <space> to start", Point3D(screenWidth/2 - 90, screenHeight / 3, 0), Point3D(0.964, 0.905, 0.572));
 		}
 
 		if (winScreen){
 			glMatrixMode(GL_PROJECTION);
-			glClearColor(0.403, 0.094, 0.094, 0);
+			glClearColor(0.5, 0.56862745, 0.56862745, 0);
 			showText("You Won!!!", Point3D(screenWidth / 2 - 50, screenHeight * 3 / 4, 0), Point3D(0.964, 0.905, 0.572));
 			showText("Score: " + std::to_string(block.numMoves), Point3D(screenWidth/2 - 50, screenHeight / 2, 0), Point3D(0.964, 0.905, 0.572));
+			showText("Press <space> to restart", Point3D(screenWidth/2 - 120, screenHeight / 3, 0), Point3D(0.964, 0.905, 0.572));
 		}
 
 		if (looseScreen){
 			glMatrixMode(GL_PROJECTION);
-			glClearColor(0.403, 0.094, 0.094, 0);
+			glClearColor(0.5, 0.56862745, 0.56862745, 0);
 			showText("You lost :(", Point3D(screenWidth / 2 - 60, screenHeight * 3 / 4, 0), Point3D(0.964, 0.905, 0.572));
 			showText("Score: " + std::to_string(block.numMoves), Point3D(screenWidth/2 - 50, screenHeight / 2, 0), Point3D(0.964, 0.905, 0.572));
-
+			showText("Press <space> to restart", Point3D(screenWidth/2 - 120, screenHeight / 3, 0), Point3D(0.964, 0.905, 0.572));
 		}
 	}
 	glutSwapBuffers();
