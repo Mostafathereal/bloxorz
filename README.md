@@ -13,6 +13,12 @@ We implemented a block-character based game using Opengl. The player plays as a 
 - MacOS - Apple silicon
 - Windows 10
 
+## Running Instructions
+Within the project repository, run this
+```
+make
+```
+
 ## Game Controls and Instructions
 - Press space to start the game from main menu, move on from loss and win screens
 - use `w`, `a`, `s`, `d` to move the block
