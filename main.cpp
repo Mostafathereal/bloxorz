@@ -83,6 +83,13 @@ float shine2 =76.8f ;
 float platformSize = 200;
 float base[3] = {0, -1, 0};
 
+
+/* block textures */
+Texture2D woodBlock("textures/wood.ppm");
+Texture2D lavaBlock("textures/lava.ppm");
+
+std::vector<Texture2D> blockTextures = {woodBlock, lavaBlock};
+
 /******
  * Platform object 
  */
@@ -175,6 +182,12 @@ void keyboard(unsigned char key, int x, int y)
 			case 'Z':
 				block.undoMove();
 				break;
+			case '1':
+				block.textureID = 0;
+				break;
+			case '2':
+				block.textureID = 1;
+				break;
 		}
 	}
 
@@ -186,6 +199,7 @@ void keyboard(unsigned char key, int x, int y)
 				displayObjects = true;
 				winScreen = false;
 				looseScreen = false;
+				block.numMoves = 0;
 				break;
 		}
 	}
@@ -205,9 +219,6 @@ void init(void)
 	glOrtho(-orthoDist, orthoDist, -orthoDist, orthoDist, -13, 80);
 
 	glEnable(GL_TEXTURE_2D);
-
-    block.changeTexture("textures/wood_texture.ppm");
-	block.texture.setTexture();
     
     
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -287,7 +298,7 @@ void display(void){
 		glPushMatrix();
 			// glMultMatrixf(block.rotationMatrix);
 			//glRotatef(90, 0, 0, 1);
-			block.texture.setTexture();
+			blockTextures[block.textureID].setTexture();
 			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambMat2);
 			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffMat2);
 			glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specMat2);
@@ -345,7 +356,6 @@ void FPS(int value){
 		looseScreen = true;
 		platformLevel = 0;
 		block.reset(platformList[platformLevel]);
-		block.numMoves = 0;
 
 	}
 	else if (block.gameState == 4){
@@ -354,7 +364,6 @@ void FPS(int value){
 			mainMenu = false;
 			winScreen = true;
 			looseScreen = false;
-			block.numMoves = 0;
 		}
 		platformLevel = (platformLevel + 1) % platformList.size();
 		block.reset(platformList[platformLevel]);

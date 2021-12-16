@@ -76,6 +76,8 @@ void Block::reset(Platform platform){
     // falling animation type, -1 when not set
     this->fallingAnimationType = -1;
 
+    //setTextureId
+    this->textureID = 0;
 }
 
 void Block::drawBlock(){
@@ -310,10 +312,10 @@ void Block::updatePosition(){
     }
 }
 
-void Block::changeTexture(char* file){
-    free(this->texture.img);
-    this->texture = Texture2D(file);
-}
+// void Block::changeTexture(char* file){
+//     free(this->texture.img);
+//     this->texture = Texture2D(file);
+// }
 
 void Block::fallingAnimation(){
     int fallType = this->fallingAnimationType;
