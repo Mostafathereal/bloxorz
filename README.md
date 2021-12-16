@@ -16,6 +16,7 @@ We implemented a block-character based game using Opengl. The player plays as a 
 ## Game Controls and Instructions
 - Press space to start the game from main menu, move on from loss and win screens
 - use `w`, `a`, `s`, `d` to move the block
+- use `1` and `2` to swap between different textures for the block (during any time)
 - press `q` to quit the game at anytime 
 - if block is outside the platform, you will lose
 - Pink tiles can only be travesed once, they will disappear afterwards
