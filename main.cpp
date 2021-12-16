@@ -186,6 +186,7 @@ void keyboard(unsigned char key, int x, int y)
 				displayObjects = true;
 				winScreen = false;
 				looseScreen = false;
+				block.numMoves = 0;
 				break;
 		}
 	}
@@ -343,7 +344,6 @@ void FPS(int value){
 		looseScreen = true;
 		platformLevel = 0;
 		block.reset(platformList[platformLevel]);
-		block.numMoves = 0;
 
 	}
 	else if (block.gameState == 4){
@@ -352,7 +352,6 @@ void FPS(int value){
 			mainMenu = false;
 			winScreen = true;
 			looseScreen = false;
-			block.numMoves = 0;
 		}
 		platformLevel = (platformLevel + 1) % platformList.size();
 		block.reset(platformList[platformLevel]);
